@@ -3,10 +3,6 @@ package manymap
 import scala.collection.immutable.MapLike
 
 object ManyMap {
-
-  val map = Map(1 -> 1)
-
-  def apply[A1, B](elems: (A1, B)*) = new ManyMap1(elems)
   def apply[A1, A2, B](elems: ((A1, A2), B)*) = new ManyMap2(elems)
   def apply[A1, A2, A3, B](elems: ((A1, A2, A3), B)*) = new ManyMap3(elems)
   def apply[A1, A2, A3, A4, B](elems: ((A1, A2, A3, A4), B)*) = new ManyMap4(elems)
@@ -25,11 +21,12 @@ class ManyMap1[A1, +B](elems: Seq[(A1, B)]) extends Map[A1, B] with MapLike[A1, 
   def iterator: Iterator[(A1, B)] = projection1.toIterator
 
   override def empty: ManyMap1[A1, B] = new ManyMap1[A1,B](Nil)
+
 }
 
 import utils._
 
-class ManyMap2[A1, A2, +B](elems: Seq[((A1, A2), B)]) extends Map[(A1, A2), B] with MapLike[(A1, A2), B, ManyMap2[A1, A2, B]] {
+class ManyMap2[A1, A2, +B](private val elems: Seq[((A1, A2), B)]) extends Map[(A1, A2), B] with MapLike[(A1, A2), B, ManyMap2[A1, A2, B]] {
   lazy val elemsMap = elems.toMap
   lazy val (projection1, projection2) = elemsMap.foldLeft((Map.empty[A1, B], Map.empty[A2, B])){
     case ((map1, map2), ((a1, a2), b)) => (map1 + (a1 -> b), map2 + (a2 -> b))
@@ -46,6 +43,13 @@ class ManyMap2[A1, A2, +B](elems: Seq[((A1, A2), B)]) extends Map[(A1, A2), B] w
 
   def get1(a1: A1): Option[List[B]] = p1.get(a1)
   def get2(a2: A2): Option[List[B]] = p2.get(a2)
+
+  def ++[B1 >: B](that: ManyMap2[A1, A2, B1]): ManyMap2[A1, A2, B1] = new ManyMap2(elems ++ that.elems)
+
+  override def mapValues[B1](f: B => B1): ManyMap2[A1, A2, B1] = new ManyMap2(elems.map{ case (k, v) => (k, f(v)) })
+
+  override def updated [B1 >: B](key: (A1, A2), value: B1): ManyMap2[A1, A2, B1] =
+    new ManyMap2(elemsMap.updated(key, value).toSeq)
 
   override def empty: ManyMap2[A1, A2, B] = new ManyMap2[A1, A2, B](Nil)
 }
