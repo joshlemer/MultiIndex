@@ -1,0 +1,5 @@
+package manymap
+
+class UsersTest {
+
+}
