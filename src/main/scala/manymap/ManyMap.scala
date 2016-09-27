@@ -72,7 +72,7 @@ class ManyMap2[A1, A2, B](
   def -(key: (A1, A2)): ManyMap2[A1, A2, B] = key match { case (a1, a2) =>
     underlying.get(key) match {
       case Some(b) =>
-        val (bag1, bag2) = (index1(a1).removedAll(b), index2(a2).removedAll(b))
+        val (bag1, bag2) = (index1(a1) - b, index2(a2) - b)
         new ManyMap2(underlying - key, index1 + (a1 -> bag1), index2 + (a2 -> bag2))
       case None => this
     }
@@ -84,7 +84,6 @@ class ManyMap2[A1, A2, B](
 
   def bag1(a1: A1): Bag[B] = index1(a1)
   def bag2(a2: A2): Bag[B] = index2(a2)
-
 
   def ++(that: ManyMap2[A1, A2, B]): ManyMap2[A1, A2, B] = {
     def i[A](thisI: Map[A, Bag[B]], thatI: Map[A, Bag[B]]) =
@@ -101,6 +100,7 @@ class ManyMap2[A1, A2, B](
 
   override def empty: ManyMap2[A1, A2, B] = new ManyMap2[A1, A2, B](Map.empty, Map.empty, Map.empty)
 }
+
 class ManyMap3[A1, A2, A3, +B](elems: Seq[((A1, A2, A3), B)]) extends Map[(A1, A2, A3), B] with MapLike[(A1, A2, A3), B, ManyMap3[A1, A2, A3, B]] {
   lazy val elemsMap = elems.toMap
 
