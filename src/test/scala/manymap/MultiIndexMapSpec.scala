@@ -48,4 +48,6 @@ class MultiIndexMapSpec extends FlatSpec with Matchers {
   "get2" should "return empty sequence when no elements match" in {
     mim.get2('8').length should be (0)
   }
+
+
 }
