@@ -39,6 +39,8 @@ trait MultiIndexMap2[A, B1, B2] {
 
   /** Remove one instance of a from these elements */
   def - (a: A): MultiIndexMap2[A, B1, B2]
+
+  def withIndex[B3](f3: A => B3): MultiIndexMap3[A, B1, B2, B3]
 }
 
 trait MultiIndexMap3[A, B1, B2, B3] {
@@ -65,6 +67,8 @@ trait MultiIndexMap3[A, B1, B2, B3] {
 
   /** Remove one instance of a from these elements */
   def - (a: A): MultiIndexMap3[A, B1, B2, B3]
+
+  def withIndex[B4](f4: A => B4): MultiIndexMap4[A, B1, B2, B3, B4]
 }
 
 trait MultiIndexMap4[A, B1, B2, B3, B4] {
@@ -84,7 +88,7 @@ trait MultiIndexMap4[A, B1, B2, B3, B4] {
   def get3(b3: B3): List[A]
 
   /** Get a bag of all elements that match b2 on index 2 */
-  def get3Bag(b3: B2): Bag[A]
+  def get3Bag(b3: B3): Bag[A]
 
   def get4(b4: B4): List[A]
 
@@ -160,6 +164,65 @@ class MultiIndexMap2Impl[A, B1, B2] private[manymap] (
 
   def - (a: A) = new MultiIndexMap2Impl(bag - a, f1, add(a, f1(a), index1), f2, add(a, f2(a), index2))
 
+  def withIndex[B3](f3: A => B3) = new MultiIndexMap3Impl(bag, f1, index1, f2, index2, f3, makeIndex(bag, f3))
+}
+
+class MultiIndexMap3Impl[A, B1, B2, B3] private[manymap] (
+  val bag: Bag[A],
+  val f1: A => B1,
+  val index1: Map[B1, Bag[A]],
+  val f2: A => B2,
+  val index2: Map[B2, Bag[A]],
+  val f3: A => B3,
+  val index3: Map[B3, Bag[A]]
+  ) extends MultiIndexMap3[A, B1, B2, B3] {
+
+  def get(b1: B1, b2: B2, b3: B3) = get1Bag(b1).intersect(get2Bag(b2)).intersect(get3Bag(b3))
+
+  def get1(b1: B1) = getList(index1, b1)
+  def get1Bag(b1: B1) = getBag(index1, b1)
+
+  def get2(b2: B2) = getList(index2, b2)
+  def get2Bag(b2: B2) = getBag(index2, b2)
+
+  def get3(b3: B3) = getList(index3, b3)
+  def get3Bag(b3: B3) = getBag(index3, b3)
+
+  def + (a: A) = new MultiIndexMap3Impl(bag + a, f1, add(a, f1(a), index1), f2, add(a, f2(a), index2), f3, add(a, f3(a), index3))
+
+  def - (a: A) = new MultiIndexMap3Impl(bag - a, f1, remove(a, f1(a), index1), f2, remove(a, f2(a), index2), f3, remove(a, f3(a), index3))
+
+  def withIndex[B4](f4: A => B4) = new MultiIndexMap4Impl(bag, f1, index1, f2, index2, f3, index3, f4, makeIndex(bag, f4))
+}
+class MultiIndexMap4Impl[A, B1, B2, B3, B4] private[manymap] (
+  val bag: Bag[A],
+  val f1: A => B1,
+  val index1: Map[B1, Bag[A]],
+  val f2: A => B2,
+  val index2: Map[B2, Bag[A]],
+  val f3: A => B3,
+  val index3: Map[B3, Bag[A]],
+  val f4: A => B4,
+  val index4: Map[B4, Bag[A]]
+  ) extends MultiIndexMap4[A, B1, B2, B3, B4] {
+
+  def get(b1: B1, b2: B2, b3: B3, b4: B4) = get1Bag(b1).intersect(get2Bag(b2)).intersect(get3Bag(b3)).intersect(get4Bag(b4))
+
+  def get1(b1: B1) = getList(index1, b1)
+  def get1Bag(b1: B1) = getBag(index1, b1)
+
+  def get2(b2: B2) = getList(index2, b2)
+  def get2Bag(b2: B2) = getBag(index2, b2)
+
+  def get3(b3: B3) = getList(index3, b3)
+  def get3Bag(b3: B3) = getBag(index3, b3)
+
+  def get4(b4: B4) = getList(index4, b4)
+  def get4Bag(b4: B4) = getBag(index4, b4)
+
+  def + (a: A) = new MultiIndexMap4Impl(bag + a, f1, add(a, f1(a), index1), f2, add(a, f2(a), index2), f3, add(a, f3(a), index3), f4, add(a, f4(a), index4))
+
+  def - (a: A) = new MultiIndexMap4Impl(bag - a, f1, remove(a, f1(a), index1), f2, remove(a, f2(a), index2), f3, remove(a, f3(a), index3), f4, remove(a, f4(a), index4))
 }
 
 object MultiIndexMapObj {
