@@ -2,6 +2,7 @@ package ex
 
 import manymap._
 
+
 object Ex extends App {
 
   case class User(id: Int, name: String, sex: Char)

@@ -8,7 +8,7 @@ trait MultiIndexMap[A] extends Iterable[A] {
   def iterator: Iterator[A] = bag.toIterator
 }
 
-trait MultiIndexMap1[A, B1] extends MultiIndexMap[A] with Iterable[A] {
+trait MultiIndexMap1[A, B1] extends MultiIndexMap[A] {
 
   def f1: A => B1
 
