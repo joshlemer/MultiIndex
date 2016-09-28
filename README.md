@@ -6,7 +6,7 @@ It is not currently released, but probably will be soon!
 
 For example, maybe you have a `List[User]` and want to query by both name, and by id:
 
-```
+```scala
 import manymap._
 
 case class User(name: String, id: Int)
@@ -24,7 +24,7 @@ val usersWithNameSteveAndId4 = usersByIdAndName.get("Steve", 4)
 
 The library also supports addition and subtraction
 
-```
+```scala
 val added = usersByIdAndName + User(555, "new user") 
 added.get1("new user") // List[User], contains the new user
 added.get2(555) // List[User], contains the new user
@@ -34,7 +34,7 @@ val removed = added - User(556, "removed") // removes a single instance of this 
 
 The library also supports adding indexes, yielding a higher-dimensioned index
 
-```
+```scala
 val usersByIdAndNameAndNameLength = usersByIdAndName.withIndex(_.name.length)
 
 usersByIdAndNameAndLength.get3(4) // List[Users], all uses with name of length 4
