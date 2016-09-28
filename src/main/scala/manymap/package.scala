@@ -4,8 +4,9 @@ package object manymap {
   import Utils._
   implicit class IterableOps[A](iterable: Iterable[A]) {
     def indexBy[B1](f1: A => B1): MultiIndexMap1[A, B1] = {
-      val bag = Bag.empty[A] ++ iterable
-      new MultiIndexMap1Impl(bag, f1, makeIndex(bag, f1))
+      val bag = null //Bag.empty[A] ++ iterable
+//      new MultiIndexMap1Impl(bag, f1, makeIndex(bag, f1))
+      new MultiIndexMap1Impl(null, f1, null, JIndex(iterable, f1), MultiSet(iterable))
     }
     def indexBy[B1, B2](f1: A => B1, f2: A => B2): MultiIndexMap2[A, B1, B2] = {
       val bag = Bag.empty[A] ++ iterable

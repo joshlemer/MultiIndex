@@ -2,6 +2,7 @@ package manymap
 
 import scala.collection.Bag
 
+/** Base trait of all MultiIndexMaps of any dimension */
 trait MultiIndexMap[A] extends Iterable[A] {
 
   /** Multi Set representation of all elements contained in this MultiIndexMap */
@@ -203,27 +204,91 @@ private[manymap] object Utils {
 
 import Utils._
 
+object MultiSet {
+  def apply[A](iterable: Iterable[A]) = new MultiSet[A](Map.empty) ++ iterable
+}
+
+class MultiSet[A](inner: Map[A, Int]){
+  lazy val _inner = inner.withDefaultValue(0)
+  def +(a: A) = new MultiSet(inner + (a -> (_inner(a) + 1)))
+  def -(a: A) = inner.get(a) match {
+    case Some(0) | None => this
+    case Some(1) => new MultiSet(inner - a)
+    case Some(many) => new MultiSet(_inner + (a -> (_inner(a) - 1)))
+  }
+
+  def ++(as: Iterable[A]) = as.foldLeft(this){ case (ms, a) => ms + a}
+  def --(as: Iterable[A]) = as.foldLeft(this){ case (ms, a) => ms - a}
+
+  def toList: List[A] = inner.flatMap{ case(k, v) => List.fill(v)(k) }.toList
+}
+
+object JIndex{
+  def apply[A, B](es: Iterable[A], f: A => B) = new JIndex[A, B](Map.empty) ++ (es, f)
+}
+
+class JIndex[A, B](elems: Map[B, Map[A, Int]]) {
+
+  val _elems = elems.withDefaultValue(Map.empty[A, Int].withDefaultValue(0))
+
+  def + (a: A, b: B): JIndex[A, B] = {
+    val newElems = _elems + (b -> {
+      val innerMap = _elems(b)
+      innerMap + (a -> (innerMap(a) + 1))
+    })
+    new JIndex(newElems)
+  }
+  def - (a: A, b: B): JIndex[A, B] = {
+    val newElems = _elems(b) match {
+      case empty if empty.isEmpty => _elems
+      case nonEmpty =>
+        nonEmpty(a) match {
+          case 0 => _elems
+          case 1 if (nonEmpty - a).isEmpty => _elems - b
+          case 1 => _elems + (b -> (nonEmpty - a))
+          case many => _elems + (b -> (nonEmpty + (a -> (many - 1))))
+        }
+    }
+    new JIndex(newElems)
+  }
+
+  def ++ (as: Iterable[A], f: A => B): JIndex[A, B] = as.foldLeft(this){ case (ind, a) => ind + (a, f(a)) }
+
+  def -- (as: Iterable[A], f: A => B): JIndex[A, B] = as.foldLeft(this){ case (ind, a) => ind - (a, f(a))}
+
+  def getList(b: B): List[A] = _elems(b).foldLeft(Nil: List[A]){ case (list, (a, int)) => List.fill(int)(a) ::: list}
+
+  def toList: List[A] = _elems.keys.flatMap(key => getList(key)).toList
+}
+
 class MultiIndexMap1Impl[A, B1] private[manymap] (
   val bag: Bag[A],
   val f1: A => B1,
-  index1: Map[B1, Bag[A]]) extends MultiIndexMap1[A, B1] {
+  val index1: Map[B1, Bag[A]],
+  val index1Exp: JIndex[A, B1] = null,
+  val multiSet: MultiSet[A] = null) extends MultiIndexMap1[A, B1] {
 
-  def get(b1: B1) = getBag(index1, b1)
+  def get(b1: B1) = null // getBag(index1, b1)
 
-  def get1(b1: B1) = getList(index1, b1)
+  def get1(b1: B1) = index1Exp.getList(b1)//getList(index1, b1)
 
-  def get1Bag(b1: B1) = getBag(index1, b1)
+  def get1Bag(b1: B1) = null //getBag(index1, b1)
 
-  def + (a: A) = new MultiIndexMap1Impl(bag + a, f1, add(a, f1(a), index1))
+  def + (a: A) = new MultiIndexMap1Impl(bag + a, f1, null, index1Exp + (a, f1(a)))
 
-  def - (a: A) = new MultiIndexMap1Impl(bag - a, f1, remove(a, f1(a), index1))
+  def - (a: A) = {
+    val x = new MultiIndexMap1Impl(null, f1, null, index1Exp - (a, f1(a)))
+    val y = index1Exp - (a, f1(a))
+    x
+  }
 
-  def ++ (as: Iterable[A]) = new MultiIndexMap1Impl(bag ++ as, f1, addMany(as, f1, index1))
+//  def ++ (as: Iterable[A]) = new MultiIndexMap1Impl(bag ++ as, f1, index1, index1Exp ++ (as, f1))
+  def ++ (as: Iterable[A]) = new MultiIndexMap1Impl(bag ++ as, f1, null, index1Exp ++ (as, f1))
 
   /** Remove one instance of each element from these elements and indexes */
-  def -- (as: Iterable[A]) = new MultiIndexMap1Impl(bag -- as, f1, removeMany(as, f1, index1))
+  def -- (as: Iterable[A]) = new MultiIndexMap1Impl(null, f1, null, index1Exp -- (as, f1), multiSet -- as)
 
-  def withIndex[B2](f2: A => B2) = new MultiIndexMap2Impl(bag, f1, index1, f2, makeIndex(bag, f2))
+  def withIndex[B2](f2: A => B2) = null //new MultiIndexMap2Impl(bag, f1, index1, f2, makeIndex(bag, f2))
 }
 
 class MultiIndexMap2Impl[A, B1, B2] private[manymap] (
@@ -336,3 +401,17 @@ object MultiIndexMap {
   def apply[A, B1](iterable: Iterable[A]) = new MultiIndexMapFactory(iterable)
 }
 
+object Foo extends App {
+
+  def time[R](block: => R): R = {
+    val t0 = System.currentTimeMillis()
+    val result = block    // call-by-name
+    val t1 = System.currentTimeMillis()
+    println("Elapsed time: " + (t1 - t0) + "ms")
+    result
+  }
+
+  val x = time((1 to 1000000).indexBy(_ / 4))
+  println(time(x.get1(1000)))
+  println(x.get1(100000))
+}
