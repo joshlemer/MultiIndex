@@ -2,9 +2,9 @@ package ex
 
 import manymap._
 
-class Ex {
+class Ex extends App {
 
-  val l = List(1,2,3).indexBy(_ < 5, _ + 1)
 
+  List(1,23,4).indexBy(_.toString).toMap
 
 }

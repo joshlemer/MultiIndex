@@ -34,7 +34,7 @@ trait MultiIndexMap1[A, B1] extends MultiIndexMap[A] with Iterable[A] {
 
   def withIndex[B2](f2: A => B2): MultiIndexMap2[A, B1, B2]
 
-  def ==(that: MultiIndexMap1[A, _]) = bag == that.bag && f1 == that.f1
+  def ==(that: MultiIndexMap1[A, B1]) = bag == that.bag && f1 == that.f1
 }
 
 trait MultiIndexMap2[A, B1, B2] extends MultiIndexMap[A] {
@@ -301,9 +301,12 @@ class MultiIndexMap4Impl[A, B1, B2, B3, B4] private[manymap] (
 }
 
 object MultiIndexMap {
-  def apply[A, B1](iterable: Iterable[A], f1: A => B1) = iterable.indexBy(f1)
-  def apply[A, B1, B2](iterable: Iterable[A], f1: A => B1, f2: A => B2) = iterable.indexBy(f1, f2)
-  def apply[A, B1, B2, B3](iterable: Iterable[A], f1: A => B1, f2: A => B2, f3: A => B3) = iterable.indexBy(f1, f2, f3)
-  def apply[A, B1, B2, B3, B4](iterable: Iterable[A], f1: A => B1, f2: A => B2, f3: A => B3, f4: A => B4) = iterable.indexBy(f1, f2, f3, f4)
+  class MultiIndexMapFactory[A](iterable: Iterable[A]) {
+    def apply[B1](f1: A => B1) = iterable.indexBy(f1)
+    def apply[B1, B2](f1: A => B1, f2: A => B2) = iterable.indexBy(f1, f2)
+    def apply[B1, B2, B3](f1: A => B1, f2: A => B2, f3: A => B3) = iterable.indexBy(f1, f2, f3)
+    def apply[B1, B2, B3, B4](f1: A => B1, f2: A => B2, f3: A => B3, f4: A => B4) = iterable.indexBy(f1, f2, f3, f4)
+  }
+  def apply[A, B1](iterable: Iterable[A]) = new MultiIndexMapFactory(iterable)
 }
 

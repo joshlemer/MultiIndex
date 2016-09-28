@@ -6,7 +6,6 @@ class MultiIndexMapSpec extends FlatSpec with Matchers {
 
   behavior of "MultiIndexMap"
 
-
   case class User(name: String, sex: Char)
 
   val users = List(
@@ -24,7 +23,6 @@ class MultiIndexMapSpec extends FlatSpec with Matchers {
   val mim1 = users.indexBy(_.name)
 
   println((mim1 ++ mim1) == mim1 ++ users)
-
 
   println(mim1)
 
@@ -60,5 +58,4 @@ class MultiIndexMapSpec extends FlatSpec with Matchers {
     mim3.get3(6).length should be (2)
     mim3.get3(6).foreach(_.name.length should be (6))
   }
-
 }
