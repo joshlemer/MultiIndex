@@ -7,8 +7,6 @@ class MultiIndexMapSpec extends FlatSpec with Matchers {
   behavior of "MultiIndexMap"
 
 
-  import MultiIndexMapObj._
-
   case class User(name: String, sex: Char)
 
   val users = List(
@@ -23,14 +21,14 @@ class MultiIndexMapSpec extends FlatSpec with Matchers {
     User("Aboozipadoo from planet pluto", '?')
   )
 
-  val mim1 = users.asMultiIndexMap(_.name)
+  val mim1 = users.indexBy(_.name)
 
   println((mim1 ++ mim1) == mim1 ++ users)
 
 
   println(mim1)
 
-  val mim2: MultiIndexMap2[User, String, Char] = users.asMultiIndexMap(_.name, _.sex)
+  val mim2: MultiIndexMap2[User, String, Char] = users.indexBy(_.name, _.sex)
 
   val mim3: MultiIndexMap3[User, String, Char, Int] = mim2.withIndex(_.name.length)
 

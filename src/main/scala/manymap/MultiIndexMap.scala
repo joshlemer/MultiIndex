@@ -300,24 +300,10 @@ class MultiIndexMap4Impl[A, B1, B2, B3, B4] private[manymap] (
     new MultiIndexMap4Impl(bag -- as, f1, removeMany(as, f1, index1), f2, removeMany(as, f2, index2), f3, removeMany(as, f3, index3), f4, addMany(as, f4, index4))
 }
 
-object MultiIndexMapObj {
-  implicit class IterableOps[A](iterable: Iterable[A]) {
-    def indexBy[B1](f1: A => B1): MultiIndexMap1[A, B1] = {
-      val bag = Bag.empty[A] ++ iterable
-      new MultiIndexMap1Impl(bag, f1, makeIndex(bag, f1))
-    }
-    def indexBy[B1, B2](f1: A => B1, f2: A => B2): MultiIndexMap2[A, B1, B2] = {
-      val bag = Bag.empty[A] ++ iterable
-      new MultiIndexMap2Impl(bag, f1, makeIndex(bag, f1), f2, makeIndex(bag, f2))
-    }
-    def indexBy[B1, B2, B3](f1: A => B1, f2: A => B2, f3: A => B3): MultiIndexMap3[A, B1, B2, B3] = {
-      val bag = Bag.empty[A] ++ iterable
-      new MultiIndexMap3Impl(bag, f1, makeIndex(bag, f1), f2, makeIndex(bag, f2), f3, makeIndex(bag, f3))
-    }
-    def indexBy[B1, B2, B3, B4](f1: A => B1, f2: A => B2, f3: A => B3, f4: A => B4): MultiIndexMap4[A, B1, B2, B3, B4] = {
-      val bag = Bag.empty[A] ++ iterable
-      new MultiIndexMap4Impl(bag, f1, makeIndex(bag, f1), f2, makeIndex(bag, f2), f3, makeIndex(bag, f3), f4, makeIndex(bag, f4))
-    }
-  }
+object MultiIndexMap {
+  def apply[A, B1](iterable: Iterable[A], f1: A => B1) = iterable.indexBy(f1)
+  def apply[A, B1, B2](iterable: Iterable[A], f1: A => B1, f2: A => B2) = iterable.indexBy(f1, f2)
+  def apply[A, B1, B2, B3](iterable: Iterable[A], f1: A => B1, f2: A => B2, f3: A => B3) = iterable.indexBy(f1, f2, f3)
+  def apply[A, B1, B2, B3, B4](iterable: Iterable[A], f1: A => B1, f2: A => B2, f3: A => B3, f4: A => B4) = iterable.indexBy(f1, f2, f3, f4)
 }
 
