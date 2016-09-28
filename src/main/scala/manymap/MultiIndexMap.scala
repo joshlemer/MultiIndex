@@ -3,20 +3,22 @@ package manymap
 import scala.collection.Bag
 
 trait MultiIndexMap[A] extends Iterable[A] {
+
+  /** Multi Set representation of all elements contained in this MultiIndexMap */
   def bag: Bag[A]
 
-  def iterator: Iterator[A] = bag.toIterator
+  override def iterator: Iterator[A] = bag.toIterator
 }
 
 trait MultiIndexMap1[A, B1] extends MultiIndexMap[A] {
 
+  /** First function to index elements on */
   def f1: A => B1
-
-  def bag: Bag[A]
 
   /** Get a bag of all elements that match on both indexes with b1 and b2 */
   def get(b1: B1): Bag[A]
 
+  /** Get a list of all elements that match b1 on index 1 */
   def get1(b1: B1): List[A]
 
   /** Get a bag of all elements that match b1 on index 1 */
@@ -28,8 +30,10 @@ trait MultiIndexMap1[A, B1] extends MultiIndexMap[A] {
   /** Remove one instance of a from these elements */
   def - (a: A): MultiIndexMap1[A, B1]
 
+  /** Append elements to these elements, add them to the indexes */
   def ++ (as: Iterable[A]): MultiIndexMap1[A, B1]
 
+  /** Remove one instance of each element from these elements and indexes */
   def -- (as: Iterable[A]): MultiIndexMap1[A, B1]
 
   def withIndex[B2](f2: A => B2): MultiIndexMap2[A, B1, B2]
@@ -39,13 +43,16 @@ trait MultiIndexMap1[A, B1] extends MultiIndexMap[A] {
 
 trait MultiIndexMap2[A, B1, B2] extends MultiIndexMap[A] {
 
+  /** First function to index elements on */
   def f1: A => B1
 
+  /** Second function to index elements on */
   def f2: A => B2
 
-  /** Get a bag of all elements that match on both indexes with b1 and b2 */
+  /** Get a Bag of all elements that match on both indexes with b1 and b2 */
   def get(b1: B1, b2: B2): Bag[A]
 
+  /** Get a List of all elements that match on the first index */
   def get1(b1: B1): List[A]
 
   /** Get a bag of all elements that match b1 on index 1 */
@@ -62,8 +69,10 @@ trait MultiIndexMap2[A, B1, B2] extends MultiIndexMap[A] {
   /** Remove one instance of a from these elements */
   def - (a: A): MultiIndexMap2[A, B1, B2]
 
+  /** Append elements to these elements, add them to the indexes */
   def ++ (as: Iterable[A]): MultiIndexMap2[A, B1, B2]
 
+  /** Remove one instance of each element from these elements and indexes */
   def -- (as: Iterable[A]): MultiIndexMap2[A, B1, B2]
 
   def withIndex[B3](f3: A => B3): MultiIndexMap3[A, B1, B2, B3]
@@ -72,12 +81,16 @@ trait MultiIndexMap2[A, B1, B2] extends MultiIndexMap[A] {
 }
 
 trait MultiIndexMap3[A, B1, B2, B3] extends MultiIndexMap[A] {
+  /** First function to index elements on */
   def f1: A => B1
+  /** Second function to index elements on */
   def f2: A => B2
+  /** Second function to index elements on */
   def f3: A => B3
   /** Get a bag of all elements that match on both indexes with b1 and b2 */
   def get(b1: B1, b2: B2, b3: B3): Bag[A]
 
+  /** Get a List of all elements that match on the first index */
   def get1(b1: B1): List[A]
 
   /** Get a bag of all elements that match b1 on index 1 */
@@ -99,8 +112,10 @@ trait MultiIndexMap3[A, B1, B2, B3] extends MultiIndexMap[A] {
   /** Remove one instance of a from these elements */
   def - (a: A): MultiIndexMap3[A, B1, B2, B3]
 
+  /** Append elements to these elements, add them to the indexes */
   def ++ (as: Iterable[A]): MultiIndexMap3[A, B1, B2, B3]
 
+  /** Remove one instance of each element from these elements and indexes */
   def -- (as: Iterable[A]): MultiIndexMap3[A, B1, B2, B3]
 
   def withIndex[B4](f4: A => B4): MultiIndexMap4[A, B1, B2, B3, B4]
@@ -109,14 +124,19 @@ trait MultiIndexMap3[A, B1, B2, B3] extends MultiIndexMap[A] {
 }
 
 trait MultiIndexMap4[A, B1, B2, B3, B4] extends MultiIndexMap[A] {
+  /** First function to index elements on */
   def f1: A => B1
+  /** Second function to index elements on */
   def f2: A => B2
+  /** Second function to index elements on */
   def f3: A => B3
+  /** Fourth function to index elements on */
   def f4: A => B4
 
   /** Get a bag of all elements that match on both indexes with b1 and b2 */
   def get(b1: B1, b2: B2, b3: B3, b4: B4): Bag[A]
 
+  /** Get a List of all elements that match on the first index */
   def get1(b1: B1): List[A]
 
   /** Get a bag of all elements that match b1 on index 1 */
@@ -143,8 +163,10 @@ trait MultiIndexMap4[A, B1, B2, B3, B4] extends MultiIndexMap[A] {
   /** Remove one instance of a from these elements */
   def - (a: A): MultiIndexMap4[A, B1, B2, B3, B4]
 
+  /** Append elements to these elements, add them to the indexes */
   def ++ (as: Iterable[A]): MultiIndexMap4[A, B1, B2, B3, B4]
 
+  /** Remove one instance of each element from these elements and indexes */
   def -- (as: Iterable[A]): MultiIndexMap4[A, B1, B2, B3, B4]
 
   def ==(that: MultiIndexMap4[A, _, _, _, _]) = bag == that.bag && f1 == that.f1 && f2 == that.f2 && f3 == that.f3
@@ -198,6 +220,7 @@ class MultiIndexMap1Impl[A, B1] private[manymap] (
 
   def ++ (as: Iterable[A]) = new MultiIndexMap1Impl(bag ++ as, f1, addMany(as, f1, index1))
 
+  /** Remove one instance of each element from these elements and indexes */
   def -- (as: Iterable[A]) = new MultiIndexMap1Impl(bag -- as, f1, removeMany(as, f1, index1))
 
   def withIndex[B2](f2: A => B2) = new MultiIndexMap2Impl(bag, f1, index1, f2, makeIndex(bag, f2))
@@ -224,6 +247,7 @@ class MultiIndexMap2Impl[A, B1, B2] private[manymap] (
 
   def ++ (as: Iterable[A]) = new MultiIndexMap2Impl(bag ++ as, f1, addMany(as, f1, index1), f2, addMany(as, f2, index2))
 
+  /** Remove one instance of each element from these elements and indexes */
   def -- (as: Iterable[A]) = new MultiIndexMap2Impl(bag -- as, f1, removeMany(as, f1, index1), f2, removeMany(as, f2, index2))
 
   def withIndex[B3](f3: A => B3) = new MultiIndexMap3Impl(bag, f1, index1, f2, index2, f3, makeIndex(bag, f3))
@@ -257,6 +281,7 @@ class MultiIndexMap3Impl[A, B1, B2, B3] private[manymap] (
   def ++ (as: Iterable[A]) =
     new MultiIndexMap3Impl(bag ++ as, f1, addMany(as, f1, index1), f2, addMany(as, f2, index2), f3, addMany(as, f3, index3))
 
+  /** Remove one instance of each element from these elements and indexes */
   def -- (as: Iterable[A]) =
     new MultiIndexMap3Impl(bag -- as, f1, removeMany(as, f1, index1), f2, removeMany(as, f2, index2), f3, removeMany(as, f3, index3))
 
@@ -296,6 +321,7 @@ class MultiIndexMap4Impl[A, B1, B2, B3, B4] private[manymap] (
   def ++ (as: Iterable[A]) =
     new MultiIndexMap4Impl(bag ++ as, f1, addMany(as, f1, index1), f2, addMany(as, f2, index2), f3, addMany(as, f3, index3), f4, addMany(as, f4, index4))
 
+  /** Remove one instance of each element from these elements and indexes */
   def -- (as: Iterable[A]) =
     new MultiIndexMap4Impl(bag -- as, f1, removeMany(as, f1, index1), f2, removeMany(as, f2, index2), f3, removeMany(as, f3, index3), f4, removeMany(as, f4, index4))
 }
