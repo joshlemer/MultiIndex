@@ -2,7 +2,16 @@ package manymap
 
 import scala.collection.Bag
 
-trait MultiIndexMap1[A, B1] {
+trait MultiIndexMap[A] {
+  def bag: Bag[A]
+}
+
+trait MultiIndexMap1[A, B1] extends MultiIndexMap[A] with Iterable[A] {
+
+  def f1: A => B1
+
+  def bag: Bag[A]
+
   /** Get a bag of all elements that match on both indexes with b1 and b2 */
   def get(b1: B1): Bag[A]
 
@@ -17,7 +26,13 @@ trait MultiIndexMap1[A, B1] {
   /** Remove one instance of a from these elements */
   def - (a: A): MultiIndexMap1[A, B1]
 
+  def ++ (as: Iterable[A]): MultiIndexMap1[A, B1]
+
+  def -- (as: Iterable[A]): MultiIndexMap1[A, B1]
+
   def withIndex[B2](f2: A => B2): MultiIndexMap2[A, B1, B2]
+
+  def ==(that: MultiIndexMap1[A, _]) = bag == that.bag && f1 == that.f1
 }
 
 trait MultiIndexMap2[A, B1, B2] {
@@ -39,6 +54,10 @@ trait MultiIndexMap2[A, B1, B2] {
 
   /** Remove one instance of a from these elements */
   def - (a: A): MultiIndexMap2[A, B1, B2]
+
+  def ++ (as: Iterable[A]): MultiIndexMap2[A, B1, B2]
+
+  def -- (as: Iterable[A]): MultiIndexMap2[A, B1, B2]
 
   def withIndex[B3](f3: A => B3): MultiIndexMap3[A, B1, B2, B3]
 }
@@ -67,6 +86,10 @@ trait MultiIndexMap3[A, B1, B2, B3] {
 
   /** Remove one instance of a from these elements */
   def - (a: A): MultiIndexMap3[A, B1, B2, B3]
+
+  def ++ (as: Iterable[A]): MultiIndexMap3[A, B1, B2, B3]
+
+  def -- (as: Iterable[A]): MultiIndexMap3[A, B1, B2, B3]
 
   def withIndex[B4](f4: A => B4): MultiIndexMap4[A, B1, B2, B3, B4]
 }
@@ -100,6 +123,10 @@ trait MultiIndexMap4[A, B1, B2, B3, B4] {
 
   /** Remove one instance of a from these elements */
   def - (a: A): MultiIndexMap4[A, B1, B2, B3, B4]
+
+  def ++ (as: Iterable[A]): MultiIndexMap4[A, B1, B2, B3, B4]
+
+  def -- (as: Iterable[A]): MultiIndexMap4[A, B1, B2, B3, B4]
 }
 
 private[manymap] object Utils {
@@ -107,6 +134,9 @@ private[manymap] object Utils {
 
   def add[A, BN](a: A, bn: BN, index: Map[BN, Bag[A]]): Map[BN, Bag[A]] =
     index + (bn -> (index.getOrElse(bn, Bag.empty[A]) + a))
+
+  def addMany[A, BN](abs: Iterable[A], f: A => BN, index: Map[BN, Bag[A]]): Map[BN, Bag[A]] =
+    abs.foldLeft(index){ case (ind, a) => add(a, f(a), ind )}
 
   def remove[A, BN](a: A, bn: BN, index: Map[BN, Bag[A]]): Map[BN, Bag[A]] = {
     index.get(bn) match {
@@ -117,6 +147,9 @@ private[manymap] object Utils {
       case None => index
     }
   }
+
+  def removeMany[A, BN](as: Iterable[A], f: A => BN, index: Map[BN, Bag[A]]): Map[BN, Bag[A]] =
+    as.foldLeft(index){ case (ind, a) => remove(a, f(a), ind)}
 
   def getList[A, BN](index: Map[BN, Bag[A]], bn: BN) = index.get(bn).map(_.toList).getOrElse(Nil)
 
@@ -129,8 +162,10 @@ import Utils._
 
 class MultiIndexMap1Impl[A, B1] private[manymap] (
   val bag: Bag[A],
-  f1: A => B1,
+  val f1: A => B1,
   val index1: Map[B1, Bag[A]]) extends MultiIndexMap1[A, B1] {
+
+  def iterator = bag.toIterator
 
   def get(b1: B1) = getBag(index1, b1)
 
@@ -141,6 +176,10 @@ class MultiIndexMap1Impl[A, B1] private[manymap] (
   def + (a: A) = new MultiIndexMap1Impl(bag + a, f1, add(a, f1(a), index1))
 
   def - (a: A) = new MultiIndexMap1Impl(bag - a, f1, remove(a, f1(a), index1))
+
+  def ++ (as: Iterable[A]) = new MultiIndexMap1Impl(bag ++ as, f1, addMany(as, f1, index1))
+
+  def -- (as: Iterable[A]) = new MultiIndexMap1Impl(bag -- as, f1, removeMany(as, f1, index1))
 
   def withIndex[B2](f2: A => B2) = new MultiIndexMap2Impl(bag, f1, index1, f2, makeIndex(bag, f2))
 }
@@ -163,6 +202,10 @@ class MultiIndexMap2Impl[A, B1, B2] private[manymap] (
   def + (a: A) = new MultiIndexMap2Impl(bag + a, f1, add(a, f1(a), index1), f2, add(a, f2(a), index2))
 
   def - (a: A) = new MultiIndexMap2Impl(bag - a, f1, add(a, f1(a), index1), f2, add(a, f2(a), index2))
+
+  def ++ (as: Iterable[A]) = new MultiIndexMap2Impl(bag ++ as, f1, addMany(as, f1, index1), f2, addMany(as, f2, index2))
+
+  def -- (as: Iterable[A]) = new MultiIndexMap2Impl(bag -- as, f1, removeMany(as, f1, index1), f2, removeMany(as, f2, index2))
 
   def withIndex[B3](f3: A => B3) = new MultiIndexMap3Impl(bag, f1, index1, f2, index2, f3, makeIndex(bag, f3))
 }
@@ -191,6 +234,12 @@ class MultiIndexMap3Impl[A, B1, B2, B3] private[manymap] (
   def + (a: A) = new MultiIndexMap3Impl(bag + a, f1, add(a, f1(a), index1), f2, add(a, f2(a), index2), f3, add(a, f3(a), index3))
 
   def - (a: A) = new MultiIndexMap3Impl(bag - a, f1, remove(a, f1(a), index1), f2, remove(a, f2(a), index2), f3, remove(a, f3(a), index3))
+
+  def ++ (as: Iterable[A]) =
+    new MultiIndexMap3Impl(bag ++ as, f1, addMany(as, f1, index1), f2, addMany(as, f2, index2), f3, addMany(as, f3, index3))
+
+  def -- (as: Iterable[A]) =
+    new MultiIndexMap3Impl(bag -- as, f1, removeMany(as, f1, index1), f2, removeMany(as, f2, index2), f3, removeMany(as, f3, index3))
 
   def withIndex[B4](f4: A => B4) = new MultiIndexMap4Impl(bag, f1, index1, f2, index2, f3, index3, f4, makeIndex(bag, f4))
 }
@@ -223,10 +272,22 @@ class MultiIndexMap4Impl[A, B1, B2, B3, B4] private[manymap] (
   def + (a: A) = new MultiIndexMap4Impl(bag + a, f1, add(a, f1(a), index1), f2, add(a, f2(a), index2), f3, add(a, f3(a), index3), f4, add(a, f4(a), index4))
 
   def - (a: A) = new MultiIndexMap4Impl(bag - a, f1, remove(a, f1(a), index1), f2, remove(a, f2(a), index2), f3, remove(a, f3(a), index3), f4, remove(a, f4(a), index4))
+
+  def ++ (as: Iterable[A]) =
+    new MultiIndexMap4Impl(bag ++ as, f1, addMany(as, f1, index1), f2, addMany(as, f2, index2), f3, addMany(as, f3, index3), f4, addMany(as, f4, index4))
+
+  def -- (as: Iterable[A]) =
+    new MultiIndexMap4Impl(bag -- as, f1, removeMany(as, f1, index1), f2, removeMany(as, f2, index2), f3, removeMany(as, f3, index3), f4, addMany(as, f4, index4))
 }
 
 object MultiIndexMapObj {
   implicit class IterableOps[A](iterable: Iterable[A]) {
+
+    def asMultiIndexMap[B1](f1: A => B1): MultiIndexMap1[A, B1] = {
+      val bag = Bag.empty[A] ++ iterable
+      new MultiIndexMap1Impl(bag, f1, makeIndex(bag, f1))
+    }
+
     def asMultiIndexMap[B1, B2](f1: A => B1, f2: A => B2): MultiIndexMap2[A, B1, B2] = {
       val bag = Bag.empty[A] ++ iterable
       new MultiIndexMap2Impl(bag, f1, makeIndex(bag, f1), f2, makeIndex(bag, f2))
