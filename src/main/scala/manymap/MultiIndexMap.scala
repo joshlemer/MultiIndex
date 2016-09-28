@@ -212,15 +212,15 @@ class MultiIndexMap2Impl[A, B1, B2] private[manymap] (
 
   def get(b1: B1, b2: B2) = get1Bag(b1).intersect(get2Bag(b2))
 
-  def get1(b1: B1) = index1.get(b1).map(_.toList).getOrElse(Nil)
-  def get1Bag(b1: B1) = index1.getOrElse(b1, Bag.empty)
+  def get1(b1: B1) = getList(index1, b1)
+  def get1Bag(b1: B1) = getBag(index1, b1)
 
-  def get2(b2: B2) = index2.get(b2).map(_.toList).getOrElse(Nil)
-  def get2Bag(b2: B2) = index2.getOrElse(b2, Bag.empty)
+  def get2(b2: B2) = getList(index2, b2)
+  def get2Bag(b2: B2) = getBag(index2, b2)
 
   def + (a: A) = new MultiIndexMap2Impl(bag + a, f1, add(a, f1(a), index1), f2, add(a, f2(a), index2))
 
-  def - (a: A) = new MultiIndexMap2Impl(bag - a, f1, add(a, f1(a), index1), f2, add(a, f2(a), index2))
+  def - (a: A) = new MultiIndexMap2Impl(bag - a, f1, remove(a, f1(a), index1), f2, remove(a, f2(a), index2))
 
   def ++ (as: Iterable[A]) = new MultiIndexMap2Impl(bag ++ as, f1, addMany(as, f1, index1), f2, addMany(as, f2, index2))
 
@@ -297,7 +297,7 @@ class MultiIndexMap4Impl[A, B1, B2, B3, B4] private[manymap] (
     new MultiIndexMap4Impl(bag ++ as, f1, addMany(as, f1, index1), f2, addMany(as, f2, index2), f3, addMany(as, f3, index3), f4, addMany(as, f4, index4))
 
   def -- (as: Iterable[A]) =
-    new MultiIndexMap4Impl(bag -- as, f1, removeMany(as, f1, index1), f2, removeMany(as, f2, index2), f3, removeMany(as, f3, index3), f4, addMany(as, f4, index4))
+    new MultiIndexMap4Impl(bag -- as, f1, removeMany(as, f1, index1), f2, removeMany(as, f2, index2), f3, removeMany(as, f3, index3), f4, removeMany(as, f4, index4))
 }
 
 object MultiIndexMap {
