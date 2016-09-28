@@ -25,11 +25,11 @@ val usersWithNameSteveAndId4 = usersByIdAndName.get("Steve", 4)
 The library also supports addition and subtraction
 
 ```scala
-val added = usersByIdAndName + User(555, "new user") 
+val added = usersByIdAndName + User("new user", 555) 
 added.get1("new user") // List[User], contains the new user
 added.get2(555) // List[User], contains the new user
 
-val removed = added - User(556, "removed") // removes a single instance of this user
+val removed = added - User("removed", 556) // removes a single instance of this user
 ```
 
 The library also supports adding indexes, yielding a higher-dimensioned index
