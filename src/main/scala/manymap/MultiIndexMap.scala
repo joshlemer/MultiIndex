@@ -175,7 +175,7 @@ object MultiSet {
   def empty[A] = apply[A](Nil)
 }
 
-class MultiSet[A](inner: Map[A, Int]) {
+class MultiSet[A](inner: Map[A, Int]) extends Iterable[A] {
   private lazy val _inner = inner.withDefaultValue(0)
 
   def apply(a: A): Int = _inner(a)
@@ -195,11 +195,9 @@ class MultiSet[A](inner: Map[A, Int]) {
     small._inner.foldLeft(MultiSet.empty[A]){ case (ms, (a, int)) => ms + (a, small(a).min(big(a)))}
   }
 
-  def toList: List[A] = inner.flatMap{ case(k, v) => List.fill(v)(k) }.toList
+  def iterator = _inner.flatMap { case (a, int) => List.fill(int)(a) }.iterator
 
-  def isEmpty: Boolean = inner.isEmpty
-
-  val size = _inner.size
+  def ==(that: MultiSet[A]) = _inner == that._inner
 }
 
 object JIndex{
@@ -380,7 +378,7 @@ object Foo extends App {
     result
   }
 
-  val x = time((1 to 1000000).indexBy(_ / 4))
+  val x = time((1 to 1000000).indexBy(_ / 4, _ / 2, _.toString) -- (1 to 10))
   println(time(x.get1(1000)))
   println(x.get1(100000))
 }
