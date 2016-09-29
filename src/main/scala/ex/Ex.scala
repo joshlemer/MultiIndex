@@ -2,7 +2,6 @@ package ex
 
 import manymap._
 
-
 object Ex extends App {
 
   case class User(id: Int, name: String, sex: Char)
@@ -50,3 +49,6 @@ object Ex extends App {
   withNameLengthIndex.get4(6) // list of users with name of length 6
 
 }
+
+
+
