@@ -1,5 +1,7 @@
 package manymap
 
+import scala.collection.{mutable, IterableLike}
+
 /** Base trait of all MultiIndexMaps of any dimension */
 trait MultiIndexMap[A] extends Iterable[A] {
   def multiSet: MultiSet[A]
@@ -7,8 +9,9 @@ trait MultiIndexMap[A] extends Iterable[A] {
   override def iterator: Iterator[A] = multiSet.toList.toIterator
 }
 
-trait MultiIndexMap1[A, B1] extends MultiIndexMap[A] {
+trait MultiIndexMap1Like[A, B1, +This <: MultiIndexMap1Like[A, B1, This] with MultiIndexMap1[A, B1]] extends IterableLike[A, This] with MultiIndexMap[A] {
 
+  def empty(f1: A => B1): This
   /** First function to index elements on */
   def f1: A => B1
 
@@ -35,8 +38,27 @@ trait MultiIndexMap1[A, B1] extends MultiIndexMap[A] {
 
   def withIndex[B2](f2: A => B2): MultiIndexMap2[A, B1, B2]
 
+  override protected[this] def newBuilder: mutable.Builder[A, This] = new MultiIndexMap1Builder[A, B1, This](empty(f1))
+}
+
+trait MultiIndexMap1[A, B1] extends MultiIndexMap1Like[A, B1, MultiIndexMap1[A, B1]] {
+
+  def empty(f1: A => B1) = MultiIndexMap.empty(f1)
+
   def ==(that: MultiIndexMap1[A, B1]) = multiSet == that.multiSet && f1 == that.f1
 }
+
+class MultiIndexMap1Builder[A, B1, Coll <: MultiIndexMap1[A, B1] with MultiIndexMap1Like[A, B1, Coll]](empty: Coll)
+  extends mutable.Builder[A, Coll] {
+  protected var elems: Coll = empty
+  def +=(x: A): this.type = {
+    elems = (elems + x).asInstanceOf[Coll]
+    this
+  }
+  def clear() { elems = empty }
+  def result: Coll = elems
+}
+
 
 trait MultiIndexMap2[A, B1, B2] extends MultiIndexMap[A] {
 
@@ -201,6 +223,7 @@ class MultiSet[A](inner: Map[A, Int]) extends Iterable[A] {
   }
 
   def iterator: Iterator[A] = inner.flatMap{ case(k, v) => Vector.fill(v)(k) }.toIterator
+
 }
 
 object JIndex{
@@ -370,10 +393,14 @@ object MultiIndexMap {
     def apply[B1, B2, B3](f1: A => B1, f2: A => B2, f3: A => B3) = iterable.indexBy(f1, f2, f3)
     def apply[B1, B2, B3, B4](f1: A => B1, f2: A => B2, f3: A => B3, f4: A => B4) = iterable.indexBy(f1, f2, f3, f4)
   }
-  def apply[A, B1](iterable: Iterable[A]) = new MultiIndexMapFactory(iterable)
+  def apply[A](iterable: Iterable[A]) = new MultiIndexMapFactory(iterable)
+
+  def empty[A, B1](f1: A => B1) = apply[A](Iterable.empty)(f1)
 }
 
 object Foo extends App {
+
+  println((1 to 10).indexBy(_ / 3).filter(_ % 3 != 0).get1(1))
 
   def time[R](block: => R): R = {
     val t0 = System.currentTimeMillis()
