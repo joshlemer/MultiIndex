@@ -177,7 +177,7 @@ object MultiSet {
   def empty[A] = apply[A](Nil)
 }
 
-class MultiSet[A](inner: Map[A, Int]) {
+class MultiSet[A](inner: Map[A, Int]) extends Iterable[A] {
   private lazy val _inner = inner.withDefaultValue(0)
 
   def apply(a: A): Int = _inner(a)
@@ -197,24 +197,27 @@ class MultiSet[A](inner: Map[A, Int]) {
     small._inner.foldLeft(MultiSet.empty[A]){ case (ms, (a, int)) => ms + (a, small(a).min(big(a)))}
   }
 
-  def toList: List[A] = inner.flatMap{ case(k, v) => List.fill(v)(k) }.toList
+  def union(that: MultiSet[A]): MultiSet[A] = {
+    val (small, big) = if(size < that.size) (this, that) else (that, this)
+    small._inner.foldLeft(big) { case (ms, (a, int)) => ms + (a, int) }
+  }
 
-  def isEmpty: Boolean = inner.isEmpty
-
-  val size = _inner.size
+  def iterator: Iterator[A] = inner.flatMap{ case(k, v) => Vector.fill(v)(k) }.toIterator
 }
 
 object JIndex{
-  def apply[A, B](es: Iterable[A], f: A => B) = new JIndex[A, B](Map.empty) ++ (es, f)
+  def apply[A, B](f: A => B, es: Iterable[A] = Iterable.empty[A]) = empty[A, B](f) ++ es
+
+  def empty[A, B](f: A => B) = new JIndex[A, B](Map.empty, f)
 }
 
-class JIndex[A, B](elems: Map[B, MultiSet[A]]) {
+class JIndex[A, B](elems: Map[B, MultiSet[A]], f: A => B) {
 
   val _elems = elems.withDefaultValue(MultiSet.empty[A])
 
   def apply(b: B) = _elems(b)
 
-  def + (a: A, b: B): JIndex[A, B] = new JIndex(_elems + (b -> (_elems(b) + a )))
+  def + (a: A, b: B): JIndex[A, B] = new JIndex(_elems + (b -> (_elems(b) + a )), f)
 
   def - (a: A, b: B): JIndex[A, B] = {
     val newElems = _elems(b) match {
@@ -228,12 +231,12 @@ class JIndex[A, B](elems: Map[B, MultiSet[A]]) {
             else _elems + (b -> removed)
         }
     }
-    new JIndex(newElems)
+    new JIndex(newElems, f)
   }
 
-  def ++ (as: Iterable[A], f: A => B): JIndex[A, B] = as.foldLeft(this){ case (ind, a) => ind + (a, f(a)) }
+  def ++ (as: Iterable[A]): JIndex[A, B] = as.foldLeft(this){ case (ind, a) => ind + (a, f(a)) }
 
-  def -- (as: Iterable[A], f: A => B): JIndex[A, B] = as.foldLeft(this){ case (ind, a) => ind - (a, f(a))}
+  def -- (as: Iterable[A]): JIndex[A, B] = as.foldLeft(this){ case (ind, a) => ind - (a, f(a))}
 
   def getList(b: B): List[A] = _elems(b).toList
 
@@ -256,12 +259,12 @@ class MultiIndexMap1Impl[A, B1] private[manymap] (
   def - (a: A) = new MultiIndexMap1Impl(multiSet - a, f1, index1 - (a, f1(a)))
 
 //  def ++ (as: Iterable[A]) = new MultiIndexMap1Impl(bag ++ as, f1, index1, index1Exp ++ (as, f1))
-  def ++ (as: Iterable[A]) = new MultiIndexMap1Impl(multiSet ++ as, f1, index1 ++ (as, f1))
+  def ++ (as: Iterable[A]) = new MultiIndexMap1Impl(multiSet ++ as, f1, index1 ++ as)
 
   /** Remove one instance of each element from these elements and indexes */
-  def -- (as: Iterable[A]) = new MultiIndexMap1Impl(multiSet -- as, f1, index1 -- (as, f1))
+  def -- (as: Iterable[A]) = new MultiIndexMap1Impl(multiSet -- as, f1, index1 -- as)
 
-  def withIndex[B2](f2: A => B2) = new MultiIndexMap2Impl(multiSet, f1, index1, f2, JIndex(multiSet.toList, f2))
+  def withIndex[B2](f2: A => B2) = new MultiIndexMap2Impl(multiSet, f1, index1, f2, JIndex(f2, multiSet.toList))
 }
 
 class MultiIndexMap2Impl[A, B1, B2] private[manymap] (
@@ -284,12 +287,12 @@ class MultiIndexMap2Impl[A, B1, B2] private[manymap] (
   def - (a: A) = new MultiIndexMap2Impl(multiSet - a, f1, index1 - (a, f1(a)), f2, index2 - (a, f2(a)))
 
 //  def ++ (as: Iterable[A]) = new MultiIndexMap1Impl(bag ++ as, f1, index1, index1Exp ++ (as, f1))
-  def ++ (as: Iterable[A]) = new MultiIndexMap2Impl(multiSet ++ as, f1, index1 ++ (as, f1), f2, index2 ++ (as, f2))
+  def ++ (as: Iterable[A]) = new MultiIndexMap2Impl(multiSet ++ as, f1, index1 ++ as, f2, index2 ++ as)
 
   /** Remove one instance of each element from these elements and indexes */
-  def -- (as: Iterable[A]) = new MultiIndexMap2Impl(multiSet -- as, f1, index1 -- (as, f1), f2, index2 ++ (as, f2))
+  def -- (as: Iterable[A]) = new MultiIndexMap2Impl(multiSet -- as, f1, index1 -- as, f2, index2 ++ as)
 
-  def withIndex[B3](f3: A => B3) = new MultiIndexMap3Impl(multiSet, f1, index1, f2, index2, f3, JIndex(multiSet.toList, f3))
+  def withIndex[B3](f3: A => B3) = new MultiIndexMap3Impl(multiSet, f1, index1, f2, index2, f3, JIndex(f3, multiSet))
 }
 
 class MultiIndexMap3Impl[A, B1, B2, B3] private[manymap] (
@@ -317,12 +320,12 @@ class MultiIndexMap3Impl[A, B1, B2, B3] private[manymap] (
   def - (a: A) = new MultiIndexMap3Impl(multiSet - a, f1, index1 - (a, f1(a)), f2, index2 - (a, f2(a)), f3, index3 - (a, f3(a)))
 
   //  def ++ (as: Iterable[A]) = new MultiIndexMap1Impl(bag ++ as, f1, index1, index1Exp ++ (as, f1))
-  def ++ (as: Iterable[A]) = new MultiIndexMap3Impl(multiSet ++ as, f1, index1 ++ (as, f1), f2, index2 ++ (as, f2), f3, index3 ++ (as, f3))
+  def ++ (as: Iterable[A]) = new MultiIndexMap3Impl(multiSet ++ as, f1, index1 ++ as, f2, index2 ++ as, f3, index3 ++ as)
 
   /** Remove one instance of each element from these elements and indexes */
-  def -- (as: Iterable[A]) = new MultiIndexMap3Impl(multiSet -- as, f1, index1 -- (as, f1), f2, index2 ++ (as, f2), f3, index3 ++ (as, f3))
+  def -- (as: Iterable[A]) = new MultiIndexMap3Impl(multiSet -- as, f1, index1 -- as, f2, index2 ++ as, f3, index3 ++ as)
 
-  def withIndex[B4](f4: A => B4) = new MultiIndexMap4Impl(multiSet, f1, index1, f2, index2, f3, index3, f4, JIndex(multiSet.toList, f4))
+  def withIndex[B4](f4: A => B4) = new MultiIndexMap4Impl(multiSet, f1, index1, f2, index2, f3, index3, f4, JIndex(f4, multiSet))
 }
 
 class MultiIndexMap4Impl[A, B1, B2, B3, B4] private[manymap] (
@@ -356,10 +359,10 @@ class MultiIndexMap4Impl[A, B1, B2, B3, B4] private[manymap] (
   def - (a: A) = new MultiIndexMap4Impl(multiSet - a, f1, index1 - (a, f1(a)), f2, index2 - (a, f2(a)), f3, index3 - (a, f3(a)), f4, index4 - (a, f4(a)))
 
   //  def ++ (as: Iterable[A]) = new MultiIndexMap1Impl(bag ++ as, f1, index1, index1Exp ++ (as, f1))
-  def ++ (as: Iterable[A]) = new MultiIndexMap4Impl(multiSet ++ as, f1, index1 ++ (as, f1), f2, index2 ++ (as, f2), f3, index3 ++ (as, f3), f4, index4 ++ (as, f4))
+  def ++ (as: Iterable[A]) = new MultiIndexMap4Impl(multiSet ++ as, f1, index1 ++ as, f2, index2 ++ as, f3, index3 ++ as, f4, index4 ++ as)
 
   /** Remove one instance of each element from these elements and indexes */
-  def -- (as: Iterable[A]) = new MultiIndexMap4Impl(multiSet -- as, f1, index1 -- (as, f1), f2, index2 ++ (as, f2), f3, index3 ++ (as, f3), f4, index4 ++ (as, f4))
+  def -- (as: Iterable[A]) = new MultiIndexMap4Impl(multiSet -- as, f1, index1 -- as, f2, index2 ++ as, f3, index3 ++ as, f4, index4 ++ as)
 }
 
 object MultiIndexMap {
@@ -381,8 +384,4 @@ object Foo extends App {
     println("Elapsed time: " + (t1 - t0) + "ms")
     result
   }
-
-  val x = time((1 to 1000000).indexBy(_ / 4))
-  println(time(x.get1(1000)))
-  println(x.get1(100000))
 }
