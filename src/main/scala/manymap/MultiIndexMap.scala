@@ -48,19 +48,19 @@ trait MultiIndexMap2[A, B1, B2] extends MultiIndexMap[A] {
   /** Second function to index elements on */
   def f2: A => B2
 
-  /** Get a Bag of all elements that match on both indexes with b1 and b2 */
-  def get(b1: B1, b2: B2): Bag[A]
+  /** Get a List of all elements that match on both indexes with b1 and b2 */
+  def get(b1: B1, b2: B2): List[A]
 
   /** Get a List of all elements that match on the first index */
   def get1(b1: B1): List[A]
 
   /** Get a bag of all elements that match b1 on index 1 */
-  def get1Bag(b1: B1): Bag[A]
+  def get1MultiSet(b1: B1): MultiSet[A]
 
   def get2(b2: B2): List[A]
 
   /** Get a bag of all elements that match b2 on index 2 */
-  def get2Bag(b2: B2): Bag[A]
+  def get2MultiSet(b2: B2): MultiSet[A]
 
   /** Append an element to these elements, add it to the indexes */
   def + (a: A): MultiIndexMap2[A, B1, B2]
@@ -76,7 +76,7 @@ trait MultiIndexMap2[A, B1, B2] extends MultiIndexMap[A] {
 
   def withIndex[B3](f3: A => B3): MultiIndexMap3[A, B1, B2, B3]
 
-  def ==(that: MultiIndexMap2[A, _, _]) = false //bag == that.bag && f1 == that.f1 && f2 == that.f2
+  def ==(that: MultiIndexMap2[A, _, _]) = multiSet == that.multiSet && f1 == that.f1 && f2 == that.f2
 }
 
 trait MultiIndexMap3[A, B1, B2, B3] extends MultiIndexMap[A] {
@@ -87,23 +87,23 @@ trait MultiIndexMap3[A, B1, B2, B3] extends MultiIndexMap[A] {
   /** Second function to index elements on */
   def f3: A => B3
   /** Get a bag of all elements that match on both indexes with b1 and b2 */
-  def get(b1: B1, b2: B2, b3: B3): Bag[A]
+  def get(b1: B1, b2: B2, b3: B3): List[A]
 
   /** Get a List of all elements that match on the first index */
   def get1(b1: B1): List[A]
 
   /** Get a bag of all elements that match b1 on index 1 */
-  def get1Bag(b1: B1): Bag[A]
+  def get1MultiSet(b1: B1): MultiSet[A]
 
   def get2(b2: B2): List[A]
 
   /** Get a bag of all elements that match b2 on index 2 */
-  def get2Bag(b2: B2): Bag[A]
+  def get2MultiSet(b2: B2): MultiSet[A]
 
   def get3(b3: B3): List[A]
 
   /** Get a bag of all elements that match b2 on index 2 */
-  def get3Bag(b3: B3): Bag[A]
+  def get3MultiSet(b3: B3): MultiSet[A]
 
   /** Append an element to these elements, add it to the indexes */
   def + (a: A): MultiIndexMap3[A, B1, B2, B3]
@@ -119,7 +119,7 @@ trait MultiIndexMap3[A, B1, B2, B3] extends MultiIndexMap[A] {
 
   def withIndex[B4](f4: A => B4): MultiIndexMap4[A, B1, B2, B3, B4]
 
-  def ==(that: MultiIndexMap3[A, _, _, _]) = false //bag == that.bag && f1 == that.f1 && f2 == that.f2 && f3 == that.f3
+  def ==(that: MultiIndexMap3[A, _, _, _]) = multiSet == that.multiSet && f1 == that.f1 && f2 == that.f2 && f3 == that.f3
 }
 
 trait MultiIndexMap4[A, B1, B2, B3, B4] extends MultiIndexMap[A] {
@@ -133,28 +133,28 @@ trait MultiIndexMap4[A, B1, B2, B3, B4] extends MultiIndexMap[A] {
   def f4: A => B4
 
   /** Get a bag of all elements that match on both indexes with b1 and b2 */
-  def get(b1: B1, b2: B2, b3: B3, b4: B4): Bag[A]
+  def get(b1: B1, b2: B2, b3: B3, b4: B4): List[A]
 
   /** Get a List of all elements that match on the first index */
   def get1(b1: B1): List[A]
 
   /** Get a bag of all elements that match b1 on index 1 */
-  def get1Bag(b1: B1): Bag[A]
+  def get1MultiSet(b1: B1): MultiSet[A]
 
   def get2(b2: B2): List[A]
 
   /** Get a bag of all elements that match b2 on index 2 */
-  def get2Bag(b2: B2): Bag[A]
+  def get2MultiSet(b2: B2): MultiSet[A]
 
   def get3(b3: B3): List[A]
 
   /** Get a bag of all elements that match b2 on index 2 */
-  def get3Bag(b3: B3): Bag[A]
+  def get3MultiSet(b3: B3): MultiSet[A]
 
   def get4(b4: B4): List[A]
 
   /** Get a bag of all elements that match b2 on index 2 */
-  def get4Bag(b4: B4): Bag[A]
+  def get4MultiSet(b4: B4): MultiSet[A]
 
   /** Append an element to these elements, add it to the indexes */
   def + (a: A): MultiIndexMap4[A, B1, B2, B3, B4]
@@ -168,39 +168,8 @@ trait MultiIndexMap4[A, B1, B2, B3, B4] extends MultiIndexMap[A] {
   /** Remove one instance of each element from these elements and indexes */
   def -- (as: Iterable[A]): MultiIndexMap4[A, B1, B2, B3, B4]
 
-  def ==(that: MultiIndexMap4[A, _, _, _, _]) = false //bag == that.bag && f1 == that.f1 && f2 == that.f2 && f3 == that.f3
+  def ==(that: MultiIndexMap4[A, _, _, _, _]) = multiSet == that.multiSet && f1 == that.f1 && f2 == that.f2 && f3 == that.f3
 }
-
-private[manymap] object Utils {
-  implicit def config[A] = Bag.configuration.compact[A]
-
-  def add[A, BN](a: A, bn: BN, index: Map[BN, Bag[A]]): Map[BN, Bag[A]] =
-    index + (bn -> (index.getOrElse(bn, Bag.empty[A]) + a))
-
-  def addMany[A, BN](abs: Iterable[A], f: A => BN, index: Map[BN, Bag[A]]): Map[BN, Bag[A]] =
-    abs.foldLeft(index){ case (ind, a) => add(a, f(a), ind )}
-
-  def remove[A, BN](a: A, bn: BN, index: Map[BN, Bag[A]]): Map[BN, Bag[A]] = {
-    index.get(bn) match {
-      case Some(bnBag) =>
-        val removedBag = bnBag - a
-        if (removedBag.isEmpty) index - bn
-        else index + (bn -> removedBag)
-      case None => index
-    }
-  }
-
-  def removeMany[A, BN](as: Iterable[A], f: A => BN, index: Map[BN, Bag[A]]): Map[BN, Bag[A]] =
-    as.foldLeft(index){ case (ind, a) => remove(a, f(a), ind)}
-
-  def getList[A, BN](index: Map[BN, Bag[A]], bn: BN) = index.get(bn).map(_.toList).getOrElse(Nil)
-
-  def getBag[A, BN](index: Map[BN, Bag[A]], bn: BN) = index.getOrElse(bn, Bag.empty[A])
-
-  def makeIndex[A, BN](bag: Bag[A], fn: A => BN) = bag.groupBy(fn).mapValues(Bag.empty[A] ++ _)
-}
-
-import Utils._
 
 object MultiSet {
   def apply[A](iterable: Iterable[A]) = new MultiSet[A](Map.empty) ++ iterable
@@ -208,24 +177,31 @@ object MultiSet {
   def empty[A] = apply[A](Nil)
 }
 
-class MultiSet[A](inner: Map[A, Int]){
-  lazy val _inner = inner.withDefaultValue(0)
+class MultiSet[A](inner: Map[A, Int]) {
+  private lazy val _inner = inner.withDefaultValue(0)
 
   def apply(a: A): Int = _inner(a)
 
-  def +(a: A) = new MultiSet(inner + (a -> (_inner(a) + 1)))
-  def -(a: A) = inner.get(a) match {
+  def +(a: A, multiplicity: Int = 1) = if(multiplicity < 1) this else new MultiSet(inner + (a -> (_inner(a) + multiplicity)))
+  def -(a: A, multiplicity: Int = 1) = if(multiplicity < 1) this else inner.get(a) match {
     case Some(0) | None => this
-    case Some(1) => new MultiSet(inner - a)
-    case Some(many) => new MultiSet(_inner + (a -> (_inner(a) - 1)))
+    case Some(few) if few <= multiplicity => new MultiSet(inner - a)
+    case Some(many) => new MultiSet(_inner + (a -> (_inner(a) - multiplicity)))
   }
 
   def ++(as: Iterable[A]) = as.foldLeft(this){ case (ms, a) => ms + a}
   def --(as: Iterable[A]) = as.foldLeft(this){ case (ms, a) => ms - a}
 
+  def intersect(that: MultiSet[A]): MultiSet[A] = {
+    val (small, big) = if(size < that.size) (this, that) else (that, this)
+    small._inner.foldLeft(MultiSet.empty[A]){ case (ms, (a, int)) => ms + (a, small(a).min(big(a)))}
+  }
+
   def toList: List[A] = inner.flatMap{ case(k, v) => List.fill(v)(k) }.toList
 
   def isEmpty: Boolean = inner.isEmpty
+
+  val size = _inner.size
 }
 
 object JIndex{
@@ -269,7 +245,7 @@ class MultiIndexMap1Impl[A, B1] private[manymap] (
   val f1: A => B1,
   val index1: JIndex[A, B1]) extends MultiIndexMap1[A, B1] {
 
-  def get(b1: B1) = null // getBag(index1, b1)
+  def get(b1: B1) = get1(b1)
 
   def get1(b1: B1) = index1.getList(b1)//getList(index1, b1)
 
@@ -285,113 +261,105 @@ class MultiIndexMap1Impl[A, B1] private[manymap] (
   /** Remove one instance of each element from these elements and indexes */
   def -- (as: Iterable[A]) = new MultiIndexMap1Impl(multiSet -- as, f1, index1 -- (as, f1))
 
-  def withIndex[B2](f2: A => B2) = null //new MultiIndexMap2Impl(bag, f1, index1, f2, makeIndex(bag, f2))
+  def withIndex[B2](f2: A => B2) = new MultiIndexMap2Impl(multiSet, f1, index1, f2, JIndex(multiSet.toList, f2))
 }
 
 class MultiIndexMap2Impl[A, B1, B2] private[manymap] (
-  val bag: Bag[A],
+  val multiSet: MultiSet[A],
   val f1: A => B1,
-  val index1: Map[B1, Bag[A]],
+  val index1: JIndex[A, B1],
   val f2: A => B2,
-  val index2: Map[B2, Bag[A]]) extends MultiIndexMap2[A, B1, B2] {
+  val index2: JIndex[A, B2]) extends MultiIndexMap2[A, B1, B2] {
 
-  val multiSet = null
+  def get(b1: B1, b2: B2) = get1MultiSet(b1).intersect(get2MultiSet(b2)).toList
 
-  def get(b1: B1, b2: B2) = get1Bag(b1).intersect(get2Bag(b2))
+  def get1(b1: B1) = index1.getList(b1)
+  def get1MultiSet(b1: B1) = index1(b1)
 
-  def get1(b1: B1) = getList(index1, b1)
-  def get1Bag(b1: B1) = getBag(index1, b1)
+  def get2(b2: B2) = index2.getList(b2)
+  def get2MultiSet(b2: B2) = index2(b2)
 
-  def get2(b2: B2) = getList(index2, b2)
-  def get2Bag(b2: B2) = getBag(index2, b2)
+  def + (a: A) = new MultiIndexMap2Impl(multiSet + a, f1, index1 + (a, f1(a)), f2, index2 + (a, f2(a)))
 
-  def + (a: A) = new MultiIndexMap2Impl(bag + a, f1, add(a, f1(a), index1), f2, add(a, f2(a), index2))
+  def - (a: A) = new MultiIndexMap2Impl(multiSet - a, f1, index1 - (a, f1(a)), f2, index2 - (a, f2(a)))
 
-  def - (a: A) = new MultiIndexMap2Impl(bag - a, f1, remove(a, f1(a), index1), f2, remove(a, f2(a), index2))
-
-  def ++ (as: Iterable[A]) = new MultiIndexMap2Impl(bag ++ as, f1, addMany(as, f1, index1), f2, addMany(as, f2, index2))
+//  def ++ (as: Iterable[A]) = new MultiIndexMap1Impl(bag ++ as, f1, index1, index1Exp ++ (as, f1))
+  def ++ (as: Iterable[A]) = new MultiIndexMap2Impl(multiSet ++ as, f1, index1 ++ (as, f1), f2, index2 ++ (as, f2))
 
   /** Remove one instance of each element from these elements and indexes */
-  def -- (as: Iterable[A]) = new MultiIndexMap2Impl(bag -- as, f1, removeMany(as, f1, index1), f2, removeMany(as, f2, index2))
+  def -- (as: Iterable[A]) = new MultiIndexMap2Impl(multiSet -- as, f1, index1 -- (as, f1), f2, index2 ++ (as, f2))
 
-  def withIndex[B3](f3: A => B3) = new MultiIndexMap3Impl(bag, f1, index1, f2, index2, f3, makeIndex(bag, f3))
+  def withIndex[B3](f3: A => B3) = new MultiIndexMap3Impl(multiSet, f1, index1, f2, index2, f3, JIndex(multiSet.toList, f3))
 }
 
 class MultiIndexMap3Impl[A, B1, B2, B3] private[manymap] (
-  val bag: Bag[A],
+  val multiSet: MultiSet[A],
   val f1: A => B1,
-  index1: Map[B1, Bag[A]],
+  val index1: JIndex[A, B1],
   val f2: A => B2,
-  index2: Map[B2, Bag[A]],
+  val index2: JIndex[A, B2],
   val f3: A => B3,
-  index3: Map[B3, Bag[A]]
-  ) extends MultiIndexMap3[A, B1, B2, B3] {
+  val index3: JIndex[A, B3]) extends MultiIndexMap3[A, B1, B2, B3] {
 
-  val multiSet = null
+  def get(b1: B1, b2: B2, b3: B3) = get1MultiSet(b1).intersect(get2MultiSet(b2)).intersect(get3MultiSet(b3)).toList
 
-  def get(b1: B1, b2: B2, b3: B3) = get1Bag(b1).intersect(get2Bag(b2)).intersect(get3Bag(b3))
+  def get1(b1: B1) = index1.getList(b1)
+  def get1MultiSet(b1: B1) = index1(b1)
 
-  def get1(b1: B1) = getList(index1, b1)
-  def get1Bag(b1: B1) = getBag(index1, b1)
+  def get2(b2: B2) = index2.getList(b2)
+  def get2MultiSet(b2: B2) = index2(b2)
 
-  def get2(b2: B2) = getList(index2, b2)
-  def get2Bag(b2: B2) = getBag(index2, b2)
+  def get3(b3: B3) = index3.getList(b3)
+  def get3MultiSet(b3: B3) = index3(b3)
 
-  def get3(b3: B3) = getList(index3, b3)
-  def get3Bag(b3: B3) = getBag(index3, b3)
+  def + (a: A) = new MultiIndexMap3Impl(multiSet + a, f1, index1 + (a, f1(a)), f2, index2 + (a, f2(a)), f3, index3 + (a, f3(a)))
 
-  def + (a: A) = new MultiIndexMap3Impl(bag + a, f1, add(a, f1(a), index1), f2, add(a, f2(a), index2), f3, add(a, f3(a), index3))
+  def - (a: A) = new MultiIndexMap3Impl(multiSet - a, f1, index1 - (a, f1(a)), f2, index2 - (a, f2(a)), f3, index3 - (a, f3(a)))
 
-  def - (a: A) = new MultiIndexMap3Impl(bag - a, f1, remove(a, f1(a), index1), f2, remove(a, f2(a), index2), f3, remove(a, f3(a), index3))
-
-  def ++ (as: Iterable[A]) =
-    new MultiIndexMap3Impl(bag ++ as, f1, addMany(as, f1, index1), f2, addMany(as, f2, index2), f3, addMany(as, f3, index3))
+  //  def ++ (as: Iterable[A]) = new MultiIndexMap1Impl(bag ++ as, f1, index1, index1Exp ++ (as, f1))
+  def ++ (as: Iterable[A]) = new MultiIndexMap3Impl(multiSet ++ as, f1, index1 ++ (as, f1), f2, index2 ++ (as, f2), f3, index3 ++ (as, f3))
 
   /** Remove one instance of each element from these elements and indexes */
-  def -- (as: Iterable[A]) =
-    new MultiIndexMap3Impl(bag -- as, f1, removeMany(as, f1, index1), f2, removeMany(as, f2, index2), f3, removeMany(as, f3, index3))
+  def -- (as: Iterable[A]) = new MultiIndexMap3Impl(multiSet -- as, f1, index1 -- (as, f1), f2, index2 ++ (as, f2), f3, index3 ++ (as, f3))
 
-  def withIndex[B4](f4: A => B4) = new MultiIndexMap4Impl(bag, f1, index1, f2, index2, f3, index3, f4, makeIndex(bag, f4))
+  def withIndex[B4](f4: A => B4) = new MultiIndexMap4Impl(multiSet, f1, index1, f2, index2, f3, index3, f4, JIndex(multiSet.toList, f4))
 }
 
 class MultiIndexMap4Impl[A, B1, B2, B3, B4] private[manymap] (
-  val bag: Bag[A],
+  val multiSet: MultiSet[A],
   val f1: A => B1,
-  index1: Map[B1, Bag[A]],
+  val index1: JIndex[A, B1],
   val f2: A => B2,
-  index2: Map[B2, Bag[A]],
+  val index2: JIndex[A, B2],
   val f3: A => B3,
-  index3: Map[B3, Bag[A]],
+  val index3: JIndex[A, B3],
   val f4: A => B4,
-  index4: Map[B4, Bag[A]]
-  ) extends MultiIndexMap4[A, B1, B2, B3, B4] {
+  val index4: JIndex[A, B4]) extends MultiIndexMap4[A, B1, B2, B3, B4] {
 
-  val multiSet = null
+  def get(b1: B1, b2: B2, b3: B3, b4: B4) =
+    get1MultiSet(b1).intersect(get2MultiSet(b2)).intersect(get3MultiSet(b3)).intersect(get4MultiSet(b4)).toList
 
-  def get(b1: B1, b2: B2, b3: B3, b4: B4) = get1Bag(b1).intersect(get2Bag(b2)).intersect(get3Bag(b3)).intersect(get4Bag(b4))
+  def get1(b1: B1) = index1.getList(b1)
+  def get1MultiSet(b1: B1) = index1(b1)
 
-  def get1(b1: B1) = getList(index1, b1)
-  def get1Bag(b1: B1) = getBag(index1, b1)
+  def get2(b2: B2) = index2.getList(b2)
+  def get2MultiSet(b2: B2) = index2(b2)
 
-  def get2(b2: B2) = getList(index2, b2)
-  def get2Bag(b2: B2) = getBag(index2, b2)
+  def get3(b3: B3) = index3.getList(b3)
+  def get3MultiSet(b3: B3) = index3(b3)
 
-  def get3(b3: B3) = getList(index3, b3)
-  def get3Bag(b3: B3) = getBag(index3, b3)
+  def get4(b4: B4) = index4.getList(b4)
+  def get4MultiSet(b4: B4) = index4(b4)
 
-  def get4(b4: B4) = getList(index4, b4)
-  def get4Bag(b4: B4) = getBag(index4, b4)
+  def + (a: A) = new MultiIndexMap4Impl(multiSet + a, f1, index1 + (a, f1(a)), f2, index2 + (a, f2(a)), f3, index3 + (a, f3(a)), f4, index4 + (a, f4(a)))
 
-  def + (a: A) = new MultiIndexMap4Impl(bag + a, f1, add(a, f1(a), index1), f2, add(a, f2(a), index2), f3, add(a, f3(a), index3), f4, add(a, f4(a), index4))
+  def - (a: A) = new MultiIndexMap4Impl(multiSet - a, f1, index1 - (a, f1(a)), f2, index2 - (a, f2(a)), f3, index3 - (a, f3(a)), f4, index4 - (a, f4(a)))
 
-  def - (a: A) = new MultiIndexMap4Impl(bag - a, f1, remove(a, f1(a), index1), f2, remove(a, f2(a), index2), f3, remove(a, f3(a), index3), f4, remove(a, f4(a), index4))
-
-  def ++ (as: Iterable[A]) =
-    new MultiIndexMap4Impl(bag ++ as, f1, addMany(as, f1, index1), f2, addMany(as, f2, index2), f3, addMany(as, f3, index3), f4, addMany(as, f4, index4))
+  //  def ++ (as: Iterable[A]) = new MultiIndexMap1Impl(bag ++ as, f1, index1, index1Exp ++ (as, f1))
+  def ++ (as: Iterable[A]) = new MultiIndexMap4Impl(multiSet ++ as, f1, index1 ++ (as, f1), f2, index2 ++ (as, f2), f3, index3 ++ (as, f3), f4, index4 ++ (as, f4))
 
   /** Remove one instance of each element from these elements and indexes */
-  def -- (as: Iterable[A]) =
-    new MultiIndexMap4Impl(bag -- as, f1, removeMany(as, f1, index1), f2, removeMany(as, f2, index2), f3, removeMany(as, f3, index3), f4, removeMany(as, f4, index4))
+  def -- (as: Iterable[A]) = new MultiIndexMap4Impl(multiSet -- as, f1, index1 -- (as, f1), f2, index2 ++ (as, f2), f3, index3 ++ (as, f3), f4, index4 ++ (as, f4))
 }
 
 object MultiIndexMap {
