@@ -5,6 +5,5 @@ version := "1.0"
 scalaVersion := "2.11.8"
 
 libraryDependencies ++= Seq(
-  "io.github.nicolasstucki" %% "multisets" % "0.3",
   "org.scalatest" %% "scalatest" % "3.0.0" % "test"
 )
