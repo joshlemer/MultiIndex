@@ -1,7 +1,5 @@
 package manymap
 
-import scala.collection.Bag
-
 /** Base trait of all MultiIndexMaps of any dimension */
 trait MultiIndexMap[A] extends Iterable[A] {
   def multiSet: MultiSet[A]
