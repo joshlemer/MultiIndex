@@ -62,11 +62,10 @@ class MultiIndexMap1Impl[A, B1] private[manymap] (
 
   def get1MultiSet(b1: B1) = index1(b1)
 
-  def + (a: A) = new MultiIndexMap1Impl(multiSet + a, f1, index1 + (a, f1(a)))
+  def + (a: A) = new MultiIndexMap1Impl(multiSet + a, f1, index1 + a)
 
-  def - (a: A) = new MultiIndexMap1Impl(multiSet - a, f1, index1 - (a, f1(a)))
+  def - (a: A) = new MultiIndexMap1Impl(multiSet - a, f1, index1 - a)
 
-  //  def ++ (as: Iterable[A]) = new MultiIndexMap1Impl(bag ++ as, f1, index1, index1Exp ++ (as, f1))
   def ++ (as: Iterable[A]) = new MultiIndexMap1Impl(multiSet ++ as, f1, index1 ++ as)
 
   /** Remove one instance of each element from these elements and indexes */
