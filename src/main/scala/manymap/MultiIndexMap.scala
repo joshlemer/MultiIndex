@@ -55,48 +55,48 @@ trait MultiIndexMap[A] extends Iterable[A] {
 //  def ==(that: MultiIndexMap2[A, _, _]) = multiSet == that.multiSet && f1 == that.f1 && f2 == that.f2
 //}
 
-trait MultiIndexMap3[A, B1, B2, B3] extends MultiIndexMap[A] {
-  /** First function to index elements on */
-  def f1: A => B1
-  /** Second function to index elements on */
-  def f2: A => B2
-  /** Second function to index elements on */
-  def f3: A => B3
-  /** Get a bag of all elements that match on both indexes with b1 and b2 */
-  def get(b1: B1, b2: B2, b3: B3): List[A]
-
-  /** Get a List of all elements that match on the first index */
-  def get1(b1: B1): List[A]
-
-  /** Get a bag of all elements that match b1 on index 1 */
-  def get1MultiSet(b1: B1): MultiSet[A]
-
-  def get2(b2: B2): List[A]
-
-  /** Get a bag of all elements that match b2 on index 2 */
-  def get2MultiSet(b2: B2): MultiSet[A]
-
-  def get3(b3: B3): List[A]
-
-  /** Get a bag of all elements that match b2 on index 2 */
-  def get3MultiSet(b3: B3): MultiSet[A]
-
-  /** Append an element to these elements, add it to the indexes */
-  def + (a: A): MultiIndexMap3[A, B1, B2, B3]
-
-  /** Remove one instance of a from these elements */
-  def - (a: A): MultiIndexMap3[A, B1, B2, B3]
-
-  /** Append elements to these elements, add them to the indexes */
-  def ++ (as: Iterable[A]): MultiIndexMap3[A, B1, B2, B3]
-
-  /** Remove one instance of each element from these elements and indexes */
-  def -- (as: Iterable[A]): MultiIndexMap3[A, B1, B2, B3]
-
-  def withIndex[B4](f4: A => B4): MultiIndexMap4[A, B1, B2, B3, B4]
-
-  def ==(that: MultiIndexMap3[A, _, _, _]) = multiSet == that.multiSet && f1 == that.f1 && f2 == that.f2 && f3 == that.f3
-}
+//trait MultiIndexMap3[A, B1, B2, B3] extends MultiIndexMap[A] {
+//  /** First function to index elements on */
+//  def f1: A => B1
+//  /** Second function to index elements on */
+//  def f2: A => B2
+//  /** Second function to index elements on */
+//  def f3: A => B3
+//  /** Get a bag of all elements that match on both indexes with b1 and b2 */
+//  def get(b1: B1, b2: B2, b3: B3): List[A]
+//
+//  /** Get a List of all elements that match on the first index */
+//  def get1(b1: B1): List[A]
+//
+//  /** Get a bag of all elements that match b1 on index 1 */
+//  def get1MultiSet(b1: B1): MultiSet[A]
+//
+//  def get2(b2: B2): List[A]
+//
+//  /** Get a bag of all elements that match b2 on index 2 */
+//  def get2MultiSet(b2: B2): MultiSet[A]
+//
+//  def get3(b3: B3): List[A]
+//
+//  /** Get a bag of all elements that match b2 on index 2 */
+//  def get3MultiSet(b3: B3): MultiSet[A]
+//
+//  /** Append an element to these elements, add it to the indexes */
+//  def + (a: A): MultiIndexMap3[A, B1, B2, B3]
+//
+//  /** Remove one instance of a from these elements */
+//  def - (a: A): MultiIndexMap3[A, B1, B2, B3]
+//
+//  /** Append elements to these elements, add them to the indexes */
+//  def ++ (as: Iterable[A]): MultiIndexMap3[A, B1, B2, B3]
+//
+//  /** Remove one instance of each element from these elements and indexes */
+//  def -- (as: Iterable[A]): MultiIndexMap3[A, B1, B2, B3]
+//
+//  def withIndex[B4](f4: A => B4): MultiIndexMap4[A, B1, B2, B3, B4]
+//
+//  def ==(that: MultiIndexMap3[A, _, _, _]) = multiSet == that.multiSet && f1 == that.f1 && f2 == that.f2 && f3 == that.f3
+//}
 
 trait MultiIndexMap4[A, B1, B2, B3, B4] extends MultiIndexMap[A] {
   /** First function to index elements on */
@@ -312,6 +312,7 @@ object MultiIndexMap {
 
   def empty[A, B1](f1: A => B1): MultiIndexMap1[A, B1] = apply[A](Iterable.empty)(f1)
   def empty[A, B1, B2](f1: A => B1, f2: A => B2): MultiIndexMap2[A, B1, B2] = empty(f1).withIndex(f2)
+  def empty[A, B1, B2, B3](f1: A => B1, f2: A => B2, f3: A => B3): MultiIndexMap3[A, B1, B2, B3] = empty(f1, f2).withIndex(f3)
 }
 
 object Foo extends App {

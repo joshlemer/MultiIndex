@@ -88,5 +88,5 @@ class MultiIndexMap2Impl[A, B1, B2] private[manymap] (
 
   override def filter(p: A => Boolean) = new MultiIndexMap2Impl(multiSet.filter(p), f1, index1.filter(p), f2, index2.filter(p))
 
-  def withIndex[B3](f3: A => B3) = ??? //new MultiIndexMap3Impl(multiSet, f1, index1, f2, index2, f3, JIndex(f3, multiSet.toList))
+  def withIndex[B3](f3: A => B3) = new MultiIndexMap3Impl(multiSet, f1, index1, f2, index2, f3, JIndex(f3, multiSet))
 }
