@@ -209,8 +209,8 @@ class MultiSet[A](inner: Map[A, Int]) extends Iterable[A] {
     case Some(many) => new MultiSet(_inner + (a -> (_inner(a) - multiplicity)))
   }
 
-  def ++(as: Iterable[A]) = as.foldLeft(this){ case (ms, a) => ms + a}
-  def --(as: Iterable[A]) = as.foldLeft(this){ case (ms, a) => ms - a}
+  def ++(as: Iterable[A]) = as.foldLeft(this){ case (ms, a) => ms + a }
+  def --(as: Iterable[A]) = as.foldLeft(this){ case (ms, a) => ms - a }
 
   def intersect(that: MultiSet[A]): MultiSet[A] = {
     val (small, big) = if(size < that.size) (this, that) else (that, this)
@@ -224,6 +224,7 @@ class MultiSet[A](inner: Map[A, Int]) extends Iterable[A] {
 
   def iterator: Iterator[A] = inner.flatMap{ case(k, v) => Vector.fill(v)(k) }.toIterator
 
+  override def filter(p: A => Boolean) = new MultiSet(inner.filterKeys(p))
 }
 
 object JIndex{
