@@ -9,8 +9,7 @@ trait MultiIndex2[A, B1, B2] extends MultiIndex2Like[A, B1, B2, MultiIndex2[A, B
   def ==(that: MultiIndex2[A, B1, B2]) = f1 == that.f1 && f2 == that.f2 && multiSet == that.multiSet
 }
 
-trait MultiIndex2Like[A, B1, B2, +This <: MultiIndex2Like[A, B1, B2, This] with MultiIndex2[A, B1, B2]]
-  extends IterableLike[A, This] with MultiIndex[A] with Get2[A, B1, B2] {
+trait MultiIndex2Like[A, B1, B2, +This <: MultiIndex2Like[A, B1, B2, This] with MultiIndex2[A, B1, B2]] extends IterableLike[A, This] with MultiIndex[A] {
 
   def empty(f1: A => B1, f2: A => B2): This
 
@@ -22,6 +21,18 @@ trait MultiIndex2Like[A, B1, B2, +This <: MultiIndex2Like[A, B1, B2, This] with 
 
   /** Get a bag of all elements that match on both indexes with b1 and b2 */
   def get(b1: B1, b2: B2): List[A]
+
+  /** Get a list of all elements that match b1 on index 1 */
+  def get1(b1: B1): List[A]
+
+  /** Get a bag of all elements that match b1 on index 1 */
+  def get1MultiSet(b1: B1): MultiSet[A]
+
+  /** Get a list of all elements that match b2 on index 2 */
+  def get2(b2: B2): List[A]
+
+  /** Get a bag of all elements that match b2 on index 2 */
+  def get2MultiSet(b2: B2): MultiSet[A]
 
   /** Append an element to these elements, add it to the indexes */
   def + (a: A): MultiIndex2[A, B1, B2]
@@ -57,6 +68,14 @@ class MultiIndex2Impl[A, B1, B2] private[multiindex] (
   val index2: Index[A, B2]) extends MultiIndex2[A, B1, B2] {
 
   def get(b1: B1, b2: B2) = get1(b1).intersect(get2(b2))
+
+  def get1(b1: B1) = index1.getList(b1)
+
+  def get1MultiSet(b1: B1) = index1(b1)
+
+  def get2(b2: B2) = index2.getList(b2)
+
+  def get2MultiSet(b2: B2) = index2(b2)
 
   def + (a: A) = new MultiIndex2Impl(multiSet + a, f1, index1 + a, f2, index2 + a)
 
