@@ -6,7 +6,7 @@ trait MultiIndex3[A, B1, B2, B3] extends MultiIndex3Like[A, B1, B2, B3, MultiInd
 
   def empty(f1: A => B1, f2: A => B2, f3: A => B3) = MultiIndex.empty(f1, f2, f3)
 
-  def ==(that: MultiIndex3[A, B1, B2, B3]) = multiSet == that.multiSet && f1 == that.f1 && f2 == that.f2 && f3 == that.f3
+  def ==(that: MultiIndex3[A, B1, B2, B3]) = f1 == that.f1 && f2 == that.f2 && f3 == that.f3 && multiSet == that.multiSet
 }
 
 trait MultiIndex3Like[A, B1, B2, B3, +This <: MultiIndex3Like[A, B1, B2, B3, This] with MultiIndex3[A, B1, B2, B3]] extends IterableLike[A, This] with MultiIndex[A] {

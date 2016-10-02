@@ -6,7 +6,7 @@ trait MultiIndex2[A, B1, B2] extends MultiIndex2Like[A, B1, B2, MultiIndex2[A, B
 
   def empty(f1: A => B1, f2: A => B2) = MultiIndex.empty(f1, f2)
 
-  def ==(that: MultiIndex2[A, B1, B2]) = multiSet == that.multiSet && f1 == that.f1 && f2 == that.f2
+  def ==(that: MultiIndex2[A, B1, B2]) = f1 == that.f1 && f2 == that.f2 && multiSet == that.multiSet
 }
 
 trait MultiIndex2Like[A, B1, B2, +This <: MultiIndex2Like[A, B1, B2, This] with MultiIndex2[A, B1, B2]] extends IterableLike[A, This] with MultiIndex[A] {

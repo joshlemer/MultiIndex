@@ -6,7 +6,7 @@ trait MultiIndex1[A, B1] extends MultiIndex1Like[A, B1, MultiIndex1[A, B1]] {
 
   def empty(f1: A => B1) = MultiIndex.empty(f1)
 
-  def ==(that: MultiIndex1[A, B1]) = multiSet == that.multiSet && f1 == that.f1
+  def ==(that: MultiIndex1[A, B1]) =  f1 == that.f1 && multiSet == that.multiSet
 }
 
 trait MultiIndex1Like[A, B1, +This <: MultiIndex1Like[A, B1, This] with MultiIndex1[A, B1]] extends IterableLike[A, This] with MultiIndex[A] {
@@ -73,5 +73,5 @@ class MultiIndex1Impl[A, B1] private[multiindex] (
 
   override def filter(p: A => Boolean) = new MultiIndex1Impl(multiSet.filter(p), f1, index1.filter(p))
 
-  def withIndex[B2](f2: A => B2) = new MultiIndex2Impl(multiSet, f1, index1, f2, Index(f2, multiSet.toList))
+  def withIndex[B2](f2: A => B2) = new MultiIndex2Impl(multiSet, f1, index1, f2, Index(f2, multiSet))
 }

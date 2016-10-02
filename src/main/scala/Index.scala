@@ -6,7 +6,7 @@ object Index{
   def empty[A, B](f: A => B) = new Index[A, B](Map.empty, f)
 }
 
-class Index[A, B](elems: Map[B, MultiSet[A]], f: A => B) {
+class Index[A, B](elems: Map[B, MultiSet[A]], val f: A => B) {
 
   val _elems = elems.withDefaultValue(MultiSet.empty[A])
 

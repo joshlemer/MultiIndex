@@ -6,7 +6,7 @@ trait MultiIndex4[A, B1, B2, B3, B4] extends MultiIndex4Like[A, B1, B2, B3, B4, 
 
   def empty(f1: A => B1, f2: A => B2, f3: A => B3, f4: A => B4) = MultiIndex.empty(f1, f2, f3, f4)
 
-  def ==(that: MultiIndex4[A, B1, B2, B3, B4]) = multiSet == that.multiSet && f1 == that.f1 && f2 == that.f2 && f3 == that.f3 && f4 == that.f4
+  def ==(that: MultiIndex4[A, B1, B2, B3, B4]) = f1 == that.f1 && f2 == that.f2 && f3 == that.f3 && f4 == that.f4 && multiSet == that.multiSet
 }
 
 trait MultiIndex4Like[A, B1, B2, B3, B4, +This <: MultiIndex4Like[A, B1, B2, B3, B4, This] with MultiIndex4[A, B1, B2, B3, B4]] extends IterableLike[A, This] with MultiIndex[A] {
@@ -111,7 +111,6 @@ class MultiIndex4Impl[A, B1, B2, B3, B4] private[multiindex] (
 
   def ++ (as: Iterable[A]) = new MultiIndex4Impl(multiSet ++ as, f1, index1 ++ as, f2, index2 ++ as, f3, index3 ++ as, f4, index4 ++ as)
 
-  /** Remove one instance of each element from these elements and indexes */
   def -- (as: Iterable[A]) = new MultiIndex4Impl(multiSet -- as, f1, index1 -- as, f2, index2 -- as, f3, index3 -- as, f4, index4 ++ as)
 
   override def filter(p: A => Boolean) = new MultiIndex4Impl(multiSet.filter(p), f1, index1.filter(p), f2, index2.filter(p), f3, index3.filter(p), f4, index4.filter(p))
