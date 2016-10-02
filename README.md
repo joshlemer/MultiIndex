@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/joshlemer/ManyMap.svg?branch=master)](https://travis-ci.org/joshlemer/ManyMap)
+
 # ManyMap
 
 This is a POC library to facilitate querying by multiple indexes on a collection in Scala. 
