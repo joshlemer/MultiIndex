@@ -1,6 +1,4 @@
-package ex
-
-import com.github.joshlemer.multiindex._
+package com.github.joshlemer.multiindex
 
 object Ex extends App {
 
