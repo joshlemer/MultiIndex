@@ -16,7 +16,7 @@ In build.sbt:
 resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
 
 libraryDependencies ++= Seq(
-  "com.github.joshlemer" %% "multiindex" % "0.0.1-SNAPSHOT"
+  "com.github.joshlemer" %% "multiindex" % "0.0.2-SNAPSHOT"
 )
 ```
 
@@ -27,7 +27,7 @@ Be sure to enable the Sonatype OSS Snapshots to your list of repositories, and t
 <dependency>
     <groupId>com.github.joshlemer</groupId>
     <artifactId>multiindex_2.11</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.2-SNAPSHOT</version>
 </dependency>
 ```
 
