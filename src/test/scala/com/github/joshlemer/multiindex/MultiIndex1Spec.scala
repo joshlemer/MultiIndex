@@ -62,16 +62,16 @@ class MultiIndex1Spec extends FlatSpec with Matchers {
     (multiIndex1ToString.take(multiIndex1ToString.size + 100) == multiIndex1ToString) should be (true)
   }
 
-//  "take(n) failing" should "equal itself if there are less than n elements" in {
-//
-//    val a = multiIndex1ToInt.take(multiIndex1ToInt.size + 100)
-//    val b = multiIndex1ToInt
-//
-//    println(a == b)
-//    println(a equals b)
-//
-//    a should equal (b)
-//    a should be (b)
-//  }
+  "take(n) failing" should "equal itself if there are less than n elements" in {
+
+    val a = multiIndex1ToInt.take(multiIndex1ToInt.size + 100)
+    val b = multiIndex1ToInt
+
+    println(a == b)
+    println(a equals b)
+
+    a should equal (b)
+    a should be (b)
+  }
 
 }
