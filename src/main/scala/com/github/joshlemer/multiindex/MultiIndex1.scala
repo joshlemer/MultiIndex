@@ -9,7 +9,8 @@ trait MultiIndex1[A, B1] extends MultiIndex1Like[A, B1, MultiIndex1[A, B1]] {
   def ==(that: MultiIndex1[A, B1]) =  f1 == that.f1 && multiSet == that.multiSet
 }
 
-trait MultiIndex1Like[A, B1, +This <: MultiIndex1Like[A, B1, This] with MultiIndex1[A, B1]] extends IterableLike[A, This] with MultiIndex[A] {
+trait MultiIndex1Like[A, B1, +This <: MultiIndex1Like[A, B1, This] with MultiIndex1[A, B1]]
+  extends IterableLike[A, This] with MultiIndex[A] with Get1[A, B1] {
 
   def empty(f1: A => B1): This
 
@@ -18,12 +19,6 @@ trait MultiIndex1Like[A, B1, +This <: MultiIndex1Like[A, B1, This] with MultiInd
 
   /** Get a bag of all elements that match on both indexes with b1 and b2 */
   def get(b1: B1): List[A]
-
-  /** Get a list of all elements that match b1 on index 1 */
-  def get1(b1: B1): List[A]
-
-  /** Get a bag of all elements that match b1 on index 1 */
-  def get1MultiSet(b1: B1): MultiSet[A]
 
   /** Append an element to these elements, add it to the indexes */
   def + (a: A): MultiIndex1[A, B1]
@@ -57,10 +52,6 @@ class MultiIndex1Impl[A, B1] private[multiindex] (
   val index1: Index[A, B1]) extends MultiIndex1[A, B1] {
 
   def get(b1: B1) = get1(b1)
-
-  def get1(b1: B1) = index1.getList(b1)//getList(index1, b1)
-
-  def get1MultiSet(b1: B1) = index1(b1)
 
   def + (a: A) = new MultiIndex1Impl(multiSet + a, f1, index1 + a)
 

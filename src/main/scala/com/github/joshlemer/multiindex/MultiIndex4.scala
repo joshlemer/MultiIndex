@@ -9,7 +9,8 @@ trait MultiIndex4[A, B1, B2, B3, B4] extends MultiIndex4Like[A, B1, B2, B3, B4, 
   def ==(that: MultiIndex4[A, B1, B2, B3, B4]) = f1 == that.f1 && f2 == that.f2 && f3 == that.f3 && f4 == that.f4 && multiSet == that.multiSet
 }
 
-trait MultiIndex4Like[A, B1, B2, B3, B4, +This <: MultiIndex4Like[A, B1, B2, B3, B4, This] with MultiIndex4[A, B1, B2, B3, B4]] extends IterableLike[A, This] with MultiIndex[A] {
+trait MultiIndex4Like[A, B1, B2, B3, B4, +This <: MultiIndex4Like[A, B1, B2, B3, B4, This] with MultiIndex4[A, B1, B2, B3, B4]]
+  extends IterableLike[A, This] with MultiIndex[A] with Get4[A, B1, B2, B3, B4] {
 
   def empty(f1: A => B1, f2: A => B2, f3: A => B3, f4: A => B4): This
 
@@ -26,31 +27,8 @@ trait MultiIndex4Like[A, B1, B2, B3, B4, +This <: MultiIndex4Like[A, B1, B2, B3,
   def f4: A => B4
 
   /** Get a bag of all elements that match on both indexes with b1 and b2 and b3*/
-  def get(b1: B1, b2: B2, b3: B3): List[A]
+  def get(b1: B1, b2: B2, b3: B3, b4: B4): List[A]
 
-  /** Get a list of all elements that match b1 on index 1 */
-  def get1(b1: B1): List[A]
-
-  /** Get a bag of all elements that match b1 on index 1 */
-  def get1MultiSet(b1: B1): MultiSet[A]
-
-  /** Get a list of all elements that match b2 on index 2 */
-  def get2(b2: B2): List[A]
-
-  /** Get a bag of all elements that match b2 on index 2 */
-  def get2MultiSet(b2: B2): MultiSet[A]
-
-  /** Get a list of all elements that match b3 on index 3 */
-  def get3(b3: B3): List[A]
-
-  /** Get a bag of all elements that match b3 on index 3 */
-  def get3MultiSet(b3: B3): MultiSet[A]
-
-  /** Get a list of all elements that match b4 on index 4 */
-  def get4(b4: B4): List[A]
-
-  /** Get a bag of all elements that match b4 on index 4 */
-  def get4MultiSet(b4: B4): MultiSet[A]
 
   /** Append an element to these elements, add it to the indexes */
   def + (a: A): MultiIndex4[A, B1, B2, B3, B4]
@@ -87,23 +65,7 @@ class MultiIndex4Impl[A, B1, B2, B3, B4] private[multiindex] (
   val f4: A => B4,
   val index4: Index[A, B4]) extends MultiIndex4[A, B1, B2, B3, B4] {
 
-  def get(b1: B1, b2: B2, b3: B3) = get1(b1).intersect(get2(b2)).intersect(get3(b3))
-
-  def get1(b1: B1) = index1.getList(b1)
-
-  def get1MultiSet(b1: B1) = index1(b1)
-
-  def get2(b2: B2) = index2.getList(b2)
-
-  def get2MultiSet(b2: B2) = index2(b2)
-
-  def get3(b3: B3) = index3.getList(b3)
-
-  def get3MultiSet(b3: B3) = index3(b3)
-
-  def get4(b4: B4) = index4.getList(b4)
-
-  def get4MultiSet(b4: B4) = index4(b4)
+  def get(b1: B1, b2: B2, b3: B3, b4: B4) = get1(b1).intersect(get2(b2)).intersect(get3(b3)).intersect(get4(b4))
 
   def + (a: A) = new MultiIndex4Impl(multiSet + a, f1, index1 + a, f2, index2 + a, f3, index3 + a, f4, index4 + a)
 
