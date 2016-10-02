@@ -1,6 +1,6 @@
 package ex
 
-import manymap._
+import multiindex._
 
 object Ex extends App {
 
@@ -43,7 +43,7 @@ object Ex extends App {
 
   // can add more indexes to the map, taking it to a higher-number-of-indexes map
 
-  val withIdIndex: MultiIndexMap3[User, String, Char, Int] = indexByNameAndSex.withIndex(_.id)
+  val withIdIndex: MultiIndex3[User, String, Char, Int] = indexByNameAndSex.withIndex(_.id)
   val withNameLengthIndex = withIdIndex.withIndex(_.name.length)
 
   withNameLengthIndex.get4(6) // list of users with name of length 6

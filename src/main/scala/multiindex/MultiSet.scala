@@ -1,4 +1,4 @@
-package manymap
+package multiindex
 
 object MultiSet {
   def apply[A](iterable: Iterable[A]) = new MultiSet[A](Map.empty) ++ iterable

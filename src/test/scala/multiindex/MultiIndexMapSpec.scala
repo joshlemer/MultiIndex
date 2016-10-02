@@ -1,4 +1,4 @@
-package manymap
+package multiindex
 
 import org.scalatest.{Matchers, FlatSpec}
 
@@ -26,9 +26,9 @@ class MultiIndexMapSpec extends FlatSpec with Matchers {
 
   println(mim1)
 
-  val mim2: MultiIndexMap2[User, String, Char] = users.indexBy(_.name, _.sex)
+  val mim2: MultiIndex2[User, String, Char] = users.indexBy(_.name, _.sex)
 
-  val mim3: MultiIndexMap3[User, String, Char, Int] = mim2.withIndex(_.name.length)
+  val mim3: MultiIndex3[User, String, Char, Int] = mim2.withIndex(_.name.length)
 
   "get1" should "get many elements when there are many matches on index1" in {
     mim2.get1("Josh").length should be (3)
