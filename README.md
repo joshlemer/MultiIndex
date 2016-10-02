@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/joshlemer/ManyMap.svg?branch=master)](https://travis-ci.org/joshlemer/ManyMap)
+[![Build Status](https://travis-ci.org/joshlemer/MultiIndex.svg?branch=master)](https://travis-ci.org/joshlemer/MultiIndex)
 
 # MultiIndex
 
