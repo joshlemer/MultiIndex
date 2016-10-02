@@ -66,7 +66,7 @@ class MultiIndexMap3Builder[A, B1, B2, B3, Coll <: MultiIndex3[A, B1, B2, B3] wi
     this
   }
   def clear() { elems = empty }
-  val result: Coll = elems
+  def result: Coll = elems
 }
 
 class MultiIndex3Impl[A, B1, B2, B3] private[multiindex] (

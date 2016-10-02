@@ -6,7 +6,9 @@ This is a library to facilitate querying by multiple indexes on a collection in 
 
 It is not currently released, but probably will be soon!
 
-# Usage
+# Installation
+
+## SBT
 
 In build.sbt:
 
@@ -16,6 +18,17 @@ resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repos
 libraryDependencies ++= Seq(
   "com.github.joshlemer" %% "multiindex" % "0.0.1-SNAPSHOT"
 )
+```
+
+## Maven
+
+Be sure to enable the Sonatype OSS Snapshots to your list of repositories, and then add the dependency:
+```xml
+<dependency>
+    <groupId>com.github.joshlemer</groupId>
+    <artifactId>multiindex_2.11</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+</dependency>
 ```
 
 # Examples

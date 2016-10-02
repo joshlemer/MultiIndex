@@ -48,7 +48,7 @@ class MultiIndexMap1Builder[A, B1, Coll <: MultiIndex1[A, B1] with MultiIndex1Li
     this
   }
   def clear() { elems = empty }
-  val result: Coll = elems
+  def result: Coll = elems
 }
 
 class MultiIndex1Impl[A, B1] private[multiindex] (
