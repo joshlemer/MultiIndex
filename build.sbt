@@ -4,15 +4,17 @@ version := "0.0.1-SNAPSHOT"
 
 scalaVersion := "2.11.8"
 
+organization := "com.github.joshlemer"
+
 libraryDependencies ++= Seq(
   "org.scalatest" %% "scalatest" % "3.0.0" % "test"
 )
 
 publishMavenStyle := true
 
-publishTo := {
+publishTo <<= version { v: String =>
   val nexus = "https://oss.sonatype.org/"
-  if (isSnapshot.value)
+  if (v.trim.endsWith("SNAPSHOT"))
     Some("snapshots" at nexus + "content/repositories/snapshots")
   else
     Some("releases"  at nexus + "service/local/staging/deploy/maven2")

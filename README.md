@@ -6,6 +6,20 @@ This is a library to facilitate querying by multiple indexes on a collection in 
 
 It is not currently released, but probably will be soon!
 
+# Usage
+
+In build.sbt:
+
+```scala
+resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
+
+libraryDependencies ++= Seq(
+  "com.github.joshlemer" %% "multiindex" % "0.0.1-SNAPSHOT"
+)
+```
+
+# Examples
+
 For example, maybe you have a `List[User]` and want to query by both name, and by id:
 
 ```scala
