@@ -72,11 +72,11 @@ class MultiIndexMap3Builder[A, B1, B2, B3, Coll <: MultiIndexMap3[A, B1, B2, B3]
 class MultiIndexMap3Impl[A, B1, B2, B3] private[manymap] (
   val multiSet: MultiSet[A],
   val f1: A => B1,
-  val index1: JIndex[A, B1],
+  val index1: Index[A, B1],
   val f2: A => B2,
-  val index2: JIndex[A, B2],
+  val index2: Index[A, B2],
   val f3: A => B3,
-  val index3: JIndex[A, B3]) extends MultiIndexMap3[A, B1, B2, B3] {
+  val index3: Index[A, B3]) extends MultiIndexMap3[A, B1, B2, B3] {
 
   def get(b1: B1, b2: B2, b3: B3) = get1(b1).intersect(get2(b2)).intersect(get3(b3))
 
@@ -103,5 +103,5 @@ class MultiIndexMap3Impl[A, B1, B2, B3] private[manymap] (
 
   override def filter(p: A => Boolean) = new MultiIndexMap3Impl(multiSet.filter(p), f1, index1.filter(p), f2, index2.filter(p), f3, index3.filter(p))
 
-  def withIndex[B4](f4: A => B4) = ??? //new MultiIndexMap3Impl(multiSet, f1, index1, f2, index2, f3, JIndex(f3, multiSet.toList))
+  def withIndex[B4](f4: A => B4) = new MultiIndexMap4Impl(multiSet, f1, index1, f2, index2, f3, index3, f4, Index(f4, multiSet))
 }

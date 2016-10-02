@@ -54,7 +54,7 @@ class MultiIndexMap1Builder[A, B1, Coll <: MultiIndexMap1[A, B1] with MultiIndex
 class MultiIndexMap1Impl[A, B1] private[manymap] (
   val multiSet: MultiSet[A],
   val f1: A => B1,
-  val index1: JIndex[A, B1]) extends MultiIndexMap1[A, B1] {
+  val index1: Index[A, B1]) extends MultiIndexMap1[A, B1] {
 
   def get(b1: B1) = get1(b1)
 
@@ -73,5 +73,5 @@ class MultiIndexMap1Impl[A, B1] private[manymap] (
 
   override def filter(p: A => Boolean) = new MultiIndexMap1Impl(multiSet.filter(p), f1, index1.filter(p))
 
-  def withIndex[B2](f2: A => B2) = new MultiIndexMap2Impl(multiSet, f1, index1, f2, JIndex(f2, multiSet.toList))
+  def withIndex[B2](f2: A => B2) = new MultiIndexMap2Impl(multiSet, f1, index1, f2, Index(f2, multiSet.toList))
 }

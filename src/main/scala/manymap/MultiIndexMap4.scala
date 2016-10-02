@@ -79,13 +79,13 @@ class MultiIndexMap4Builder[A, B1, B2, B3, B4, Coll <: MultiIndexMap4[A, B1, B2,
 class MultiIndexMap4Impl[A, B1, B2, B3, B4] private[manymap] (
   val multiSet: MultiSet[A],
   val f1: A => B1,
-  val index1: JIndex[A, B1],
+  val index1: Index[A, B1],
   val f2: A => B2,
-  val index2: JIndex[A, B2],
+  val index2: Index[A, B2],
   val f3: A => B3,
-  val index3: JIndex[A, B3],
+  val index3: Index[A, B3],
   val f4: A => B4,
-  val index4: JIndex[A, B4]) extends MultiIndexMap4[A, B1, B2, B3, B4] {
+  val index4: Index[A, B4]) extends MultiIndexMap4[A, B1, B2, B3, B4] {
 
   def get(b1: B1, b2: B2, b3: B3) = get1(b1).intersect(get2(b2)).intersect(get3(b3))
 

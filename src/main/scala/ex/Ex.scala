@@ -50,5 +50,16 @@ object Ex extends App {
 
 }
 
+object Foo extends App {
+  def time[R](block: => R): R = {
+    val t0 = System.currentTimeMillis()
+    val result = block    // call-by-name
+    val t1 = System.currentTimeMillis()
+    println("Elapsed time: " + (t1 - t0) + "ms")
+    result
+  }
+
+  println(time((((1 to 1000000) ++ (1 to 1000000)).indexBy(_ / 4, _ / 3) -- (1 to 100000) - 600000).get2(200000)))
+}
 
 

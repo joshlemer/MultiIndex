@@ -63,9 +63,9 @@ class MultiIndexMap2Builder[A, B1, B2, Coll <: MultiIndexMap2[A, B1, B2] with Mu
 class MultiIndexMap2Impl[A, B1, B2] private[manymap] (
   val multiSet: MultiSet[A],
   val f1: A => B1,
-  val index1: JIndex[A, B1],
+  val index1: Index[A, B1],
   val f2: A => B2,
-  val index2: JIndex[A, B2]) extends MultiIndexMap2[A, B1, B2] {
+  val index2: Index[A, B2]) extends MultiIndexMap2[A, B1, B2] {
 
   def get(b1: B1, b2: B2) = get1(b1).intersect(get2(b2))
 
@@ -88,5 +88,5 @@ class MultiIndexMap2Impl[A, B1, B2] private[manymap] (
 
   override def filter(p: A => Boolean) = new MultiIndexMap2Impl(multiSet.filter(p), f1, index1.filter(p), f2, index2.filter(p))
 
-  def withIndex[B3](f3: A => B3) = new MultiIndexMap3Impl(multiSet, f1, index1, f2, index2, f3, JIndex(f3, multiSet))
+  def withIndex[B3](f3: A => B3) = new MultiIndexMap3Impl(multiSet, f1, index1, f2, index2, f3, Index(f3, multiSet))
 }
