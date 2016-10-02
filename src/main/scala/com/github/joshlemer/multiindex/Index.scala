@@ -1,4 +1,4 @@
-package multiindex
+package com.github.joshlemer.multiindex
 
 object Index{
   def apply[A, B](f: A => B, es: Iterable[A] = Iterable.empty[A]) = empty[A, B](f) ++ es

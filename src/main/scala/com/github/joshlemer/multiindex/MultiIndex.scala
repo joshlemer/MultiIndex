@@ -1,4 +1,4 @@
-package multiindex
+package com.github.joshlemer.multiindex
 
 /** Base trait of all MultiIndexMaps of any dimension */
 trait MultiIndex[A] extends Iterable[A] {

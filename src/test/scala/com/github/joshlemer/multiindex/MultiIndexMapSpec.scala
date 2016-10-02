@@ -1,4 +1,4 @@
-package multiindex
+package com.github.joshlemer.multiindex
 
 import org.scalatest.{Matchers, FlatSpec}
 

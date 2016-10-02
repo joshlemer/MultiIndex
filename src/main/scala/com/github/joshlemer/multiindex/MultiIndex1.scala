@@ -1,4 +1,4 @@
-package multiindex
+package com.github.joshlemer.multiindex
 
 import scala.collection.{mutable, IterableLike}
 

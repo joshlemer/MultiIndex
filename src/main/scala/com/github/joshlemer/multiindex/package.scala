@@ -1,3 +1,4 @@
+package com.github.joshlemer
 
 package object multiindex {
   implicit class IterableOps[A](iterable: Iterable[A]) {

@@ -1,4 +1,4 @@
-package multiindex
+package com.github.joshlemer.multiindex
 
 object MultiSet {
   def apply[A](iterable: Iterable[A]) = new MultiSet[A](Map.empty) ++ iterable

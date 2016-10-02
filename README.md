@@ -9,18 +9,18 @@ It is not currently released, but probably will be soon!
 For example, maybe you have a `List[User]` and want to query by both name, and by id:
 
 ```scala
-import manymap._
+import com.github.joshlemer.multiindex._
 
 case class User(name: String, id: Int)
 
-val users: List[User] = ???
+val users: List[User] = List(User("Steve", 1), User("Josh", 2), User("Steve", 3), User("Mary", 4))
 
 val usersByIdAndName = users.indexBy(_.name, _.id)
 
-val usersNamedSteve: List[User] = usersByIdAndName.get1("Steve")
-val usersWithId4 = usersByIdAndName.get2(4)
+val usersNamedSteve: List[User] = usersByIdAndName.get1("Steve") // List(User("Steve", 1), User("Steve", 3))
+val usersWithId4 = usersByIdAndName.get2(4) // List(User("Mary", 4))
 
-val usersWithNameSteveAndId4 = usersByIdAndName.get("Steve", 4)
+val usersWithNameSteveAndId4 = usersByIdAndName.get("Steve", 4) // List()
 
 ```
 
