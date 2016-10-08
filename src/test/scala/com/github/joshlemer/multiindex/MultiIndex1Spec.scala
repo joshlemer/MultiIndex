@@ -68,6 +68,8 @@ class MultiIndex1Spec extends FlatSpec with Matchers with MultiIndex1Behaviors {
 
   "A MultiIndex1" should behave like plusBehavior(44, multiIndex1ToInt)
   it should behave like minusBehavior(44, multiIndex1ToInt)
+  it should behave like concatenateBehavior(1 to 10000, multiIndex1ToInt)
+  it should behave like behaviorOfGet(1 to 10, multiIndex1ToInt)
 
 //  "take(n) failing" should "equal itself if there are less than n elements" in {
 //
@@ -99,6 +101,11 @@ trait MultiIndex1Behaviors {
       multiIndex.size should be (0)
     }
 
+    it should "have an empty multiSet" in {
+      multiIndex.multiSet.isEmpty should be (true)
+      multiIndex.multiSet.nonEmpty should be (false)
+    }
+
     it should "throw NoSuchElementException if .head is called" in {
       intercept[NoSuchElementException] {
         multiIndex.head
@@ -123,6 +130,11 @@ trait MultiIndex1Behaviors {
 
     it should "have size > 0" in {
       multiIndex.size should be > 0
+    }
+
+    it should "have an non-empty multiSet" in {
+      multiIndex.multiSet.nonEmpty should be (true)
+      multiIndex.multiSet.isEmpty should be (false)
     }
 
     it should "have a head" in {
@@ -181,6 +193,57 @@ trait MultiIndex1Behaviors {
       val removedCount = removed.get1(removed.f1(a)).count(_ == a)
 
       removedCount should be ((beforeCount - 1).max(0))
+    }
+  }
+
+  def concatenateBehavior[A, B1](as: Iterable[A], multiIndex: => MultiIndex1[A, B1]): Unit = {
+    val seq = as.toSeq
+    val concatenated = multiIndex ++ seq
+
+    it should "increase in size by the length of the concatenation when concatenated" in {
+      concatenated.size should be (multiIndex.size + seq.size)
+    }
+
+    it should "contain all concatenated elements" in {
+      seq.foreach(a => concatenated.contains(a) should be (true))
+    }
+
+    it should "return all concatenated elements in lookups" in {
+      seq.foreach(a => concatenated.get1(concatenated.f1(a)) should contain (a))
+    }
+
+    it should "be the same MultiIndex when concatenated with an empty Iterable" in {
+      (multiIndex ++ Iterable.empty[A] == multiIndex) should be(true)
+    }
+  }
+
+  def removeBehavior[A, B1](as: Iterable[A], multiIndex: => MultiIndex1[A, B1]): Unit = {
+    val seq = as.toSeq
+    val removed = multiIndex -- seq
+
+    it should "decrease in size by the length of the removal when removed from" in {
+      removed.size should be ((multiIndex.size - seq.size).max(0))
+    }
+
+    it should "return fewer of each removed element" in {
+      seq.foreach(a => removed.multiSet(a) should be < multiIndex.multiSet(a))
+    }
+
+    it should "remain the same multiIndex when empty Iterable is removed" in {
+      (multiIndex -- Iterable.empty == multiIndex) should be (true)
+    }
+  }
+
+  def behaviorOfGet[A, B1](as: Iterable[A], multiIndex: MultiIndex1[A, B1]): Unit = {
+    it should "return elements which all map to the f1 lookup value in get" in {
+      multiIndex.multiSet.distinct.foreach(a =>
+        multiIndex.get(multiIndex.f1(a)).count(_ == a) should be (multiIndex.multiSet(a))
+      )
+    }
+    it should "return elements which all map to the f1 lookup value" in {
+      multiIndex.multiSet.distinct.foreach(a =>
+        multiIndex.get1(multiIndex.f1(a)).count(_ == a) should be (multiIndex.multiSet(a))
+      )
     }
   }
 }

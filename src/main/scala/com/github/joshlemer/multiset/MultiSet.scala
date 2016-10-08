@@ -46,6 +46,8 @@ class MultiSet[A](inner: Map[A, Int]) extends Iterable[A] {
 
   def distinct: Set[A] = inner.keySet
 
+  def toMap = inner
+
   override def filter(p: A => Boolean) = new MultiSet(inner.filterKeys(p))
 
   def ==(that: MultiSet[A]) = inner.forall{ case (a, i) => that._inner(a) == i } && that._inner.forall{ case (a, i) => _inner(a) == i }
