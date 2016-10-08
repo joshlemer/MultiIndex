@@ -41,6 +41,9 @@ trait MultiIndex1Like[A, B1, +This <: MultiIndex1Like[A, B1, This] with MultiInd
   /** Remove one instance of each element from these elements and indexes */
   def -- (as: Iterable[A]): MultiIndex1[A, B1]
 
+  /** Returns true if `a` is in this MultiIndex, otherwise false */
+  def contains(a: A): Boolean
+
   def withIndex[B2](f2: A => B2): MultiIndex2[A, B1, B2]
 
   override protected[this] def newBuilder: mutable.Builder[A, This] = new MultiIndexMap1Builder[A, B1, This](empty(f1))
@@ -72,8 +75,9 @@ class MultiIndex1Impl[A, B1] private[multiindex] (
 
   def ++ (as: Iterable[A]) = new MultiIndex1Impl(multiSet ++ as, f1, index1 ++ as)
 
-  /** Remove one instance of each element from these elements and indexes */
   def -- (as: Iterable[A]) = new MultiIndex1Impl(multiSet -- as, f1, index1 -- as)
+
+  def contains(a: A) = multiSet(a) > 0
 
   override def filter(p: A => Boolean) = new MultiIndex1Impl(multiSet.filter(p), f1, index1.filter(p))
 

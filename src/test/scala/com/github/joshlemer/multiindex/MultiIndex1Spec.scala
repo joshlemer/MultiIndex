@@ -2,7 +2,7 @@ package com.github.joshlemer.multiindex
 
 import org.scalatest.{FlatSpec, Matchers}
 
-class MultiIndex1Spec extends FlatSpec with Matchers {
+class MultiIndex1Spec extends FlatSpec with Matchers with MultiIndex1Behaviors {
 
   val f: Int => Int = _ / 4
   val g: Int => String = _.toString
@@ -62,6 +62,13 @@ class MultiIndex1Spec extends FlatSpec with Matchers {
     (multiIndex1ToString.take(multiIndex1ToString.size + 100) == multiIndex1ToString) should be (true)
   }
 
+  "An empty MultiIndex1" should behave like emptyBehavior(MultiIndex.empty[Int, Int](identity))
+
+  "A non-empty MultiIndex1" should behave like nonEmptyBehavior(multiIndex1ToInt)
+
+  "A MultiIndex1" should behave like plusBehavior(44, multiIndex1ToInt)
+  it should behave like minusBehavior(44, multiIndex1ToInt)
+
 //  "take(n) failing" should "equal itself if there are less than n elements" in {
 //
 //    val a = multiIndex1ToInt.take(multiIndex1ToInt.size + 100)
@@ -74,4 +81,106 @@ class MultiIndex1Spec extends FlatSpec with Matchers {
 //    a should be (b)
 //  }
 
+}
+
+trait MultiIndex1Behaviors {
+  this: FlatSpec with Matchers =>
+
+  def emptyBehavior[A, B1](multiIndex: => MultiIndex1[A, B1]): Unit = {
+    it should "be empty" in {
+      multiIndex.isEmpty should be (true)
+    }
+
+    it should "not be non-empty" in {
+      multiIndex.nonEmpty should be (false)
+    }
+
+    it should "have size 0" in {
+      multiIndex.size should be (0)
+    }
+
+    it should "throw NoSuchElementException if .head is called" in {
+      intercept[NoSuchElementException] {
+        multiIndex.head
+      }
+    }
+
+    it should "throw UnsupportedOperationException if .tail is called" in {
+      intercept[UnsupportedOperationException] {
+        multiIndex.tail
+      }
+    }
+  }
+
+  def nonEmptyBehavior[A, B1](multiIndex: => MultiIndex1[A, B1]): Unit = {
+    it should "not be empty" in {
+      multiIndex.isEmpty should be (false)
+    }
+
+    it should "be non-empty" in {
+      multiIndex.nonEmpty should be (true)
+    }
+
+    it should "have size > 0" in {
+      multiIndex.size should be > 0
+    }
+
+    it should "have a head" in {
+      multiIndex.head
+    }
+
+    it should "have a tail" in {
+      multiIndex.tail
+    }
+
+    it should "contain its head" in {
+      multiIndex.contains(multiIndex.head) should be (true)
+    }
+  }
+
+  def plusBehavior[A, B1](a: A, multiIndex: => MultiIndex1[A, B1]): Unit = {
+
+    it should "contain an inserted element" in {
+      (multiIndex + a).contains(a) should be (true)
+    }
+
+    it should "incriment in size when inserted" in {
+      (multiIndex + a).size should be (multiIndex.size + 1)
+    }
+
+    it should "find an inserted element after insertion" in {
+      (multiIndex + a).get1(multiIndex.f1(a)) should contain (a)
+    }
+
+    it should "add `a` to lookup list of f(a) and retain all others" in {
+      (multiIndex + a).get1(multiIndex.f1(a)) should contain theSameElementsAs (a :: multiIndex.get1(multiIndex.f1(a)))
+    }
+
+    it should "add duplicate elements" in {
+      (multiIndex + a + a).size should be (multiIndex.size + 2)
+    }
+  }
+
+  def minusBehavior[A, B1](a: A, multiIndex: => MultiIndex1[A, B1]): Unit = {
+
+    it should "not increase in size when an element is removed" in {
+      (multiIndex - a).size should be <= multiIndex.size
+    }
+
+    it should "decrease in size by 1 if the element was in the multiIndex" in {
+      if(multiIndex.contains(a)) (multiIndex - a).size should be (multiIndex.size - 1)
+    }
+
+    it should "retain the same size if the element is not in the multiIndex" in {
+      if(!multiIndex.contains(a)) (multiIndex - a).size should be (multiIndex.size)
+    }
+
+    it should "remove an instance of a removed element from the lookup" in {
+      val beforeCount = multiIndex.get1(multiIndex.f1(a)).count(_ == a)
+      val removed = multiIndex - a
+      val removedCount = removed.get1(removed.f1(a)).count(_ == a)
+
+      removedCount should be ((beforeCount - 1).max(0))
+    }
+  }
 }

@@ -6,7 +6,12 @@ object MultiSet {
   def empty[A] = new MultiSet[A](Map.empty)
 }
 
+private[multiset] object utils {
+  def smallBig[A](left: MultiSet[A], right: MultiSet[A]) = if(left.size < right.size) (left, right) else (right, left)
+}
+
 class MultiSet[A](inner: Map[A, Int]) extends Iterable[A] {
+  import utils._
   private lazy val _inner = inner.withDefaultValue(0)
 
   def apply(a: A): Int = _inner(a)
@@ -20,17 +25,20 @@ class MultiSet[A](inner: Map[A, Int]) extends Iterable[A] {
 
   def ++(as: Iterable[A]) = as.foldLeft(this){ case (ms, a) => ms + a }
 
-  def ++(that: MultiSet[A]) = union(that)
+  def ++(that: MultiSet[A]) = {
+    val (small, big) = smallBig(this, that)
+    small._inner.foldLeft(big) { case (ms, (a, multiplicity)) => ms + (a, multiplicity)}
+  }
 
   def --(as: Iterable[A]) = as.foldLeft(this){ case (ms, a) => ms - a }
   
   def intersect(that: MultiSet[A]): MultiSet[A] = {
-    val (small, big) = if(size < that.size) (this, that) else (that, this)
+    val (small, big) = smallBig(this, that)
     small._inner.foldLeft(MultiSet.empty[A]){ case (ms, (a, int)) => ms + (a, small(a).min(big(a)))}
   }
 
   def union(that: MultiSet[A]): MultiSet[A] = {
-    val (small, big) = if(size < that.size) (this, that) else (that, this)
+    val (small, big) = smallBig(this, that)
     small._inner.foldLeft(big) { case (ms, (a, int)) => ms + (a, int) }
   }
 
