@@ -245,5 +245,10 @@ trait MultiIndex1Behaviors {
         multiIndex.get1(multiIndex.f1(a)).count(_ == a) should be (multiIndex.multiSet(a))
       )
     }
+    it should "return equivalent lists and multiSets in get1 and get1MultiSet" in {
+      (multiIndex.multiSet.distinct ++ as).foreach { a =>
+        multiIndex.get1(multiIndex.f1(a)) should contain theSameElementsAs multiIndex.get1MultiSet(multiIndex.f1(a))
+      }
+    }
   }
 }
