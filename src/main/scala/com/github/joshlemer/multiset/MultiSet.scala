@@ -1,9 +1,9 @@
-package com.github.joshlemer.multiindex
+package com.github.joshlemer.multiset
 
 object MultiSet {
-  def apply[A](iterable: Iterable[A]) = new MultiSet[A](Map.empty) ++ iterable
+  def apply[A](as: A*) = as.toMultiSet
 
-  def empty[A] = apply[A](Nil)
+  def empty[A] = new MultiSet[A](Map.empty)
 }
 
 class MultiSet[A](inner: Map[A, Int]) extends Iterable[A] {
@@ -19,8 +19,11 @@ class MultiSet[A](inner: Map[A, Int]) extends Iterable[A] {
   }
 
   def ++(as: Iterable[A]) = as.foldLeft(this){ case (ms, a) => ms + a }
-  def --(as: Iterable[A]) = as.foldLeft(this){ case (ms, a) => ms - a }
 
+  def ++(that: MultiSet[A]) = union(that)
+
+  def --(as: Iterable[A]) = as.foldLeft(this){ case (ms, a) => ms - a }
+  
   def intersect(that: MultiSet[A]): MultiSet[A] = {
     val (small, big) = if(size < that.size) (this, that) else (that, this)
     small._inner.foldLeft(MultiSet.empty[A]){ case (ms, (a, int)) => ms + (a, small(a).min(big(a)))}

@@ -1,5 +1,7 @@
 package com.github.joshlemer.multiindex
 
+import com.github.joshlemer.multiset.MultiSet
+
 import scala.collection.{mutable, IterableLike}
 
 trait MultiIndex4[A, B1, B2, B3, B4] extends MultiIndex4Like[A, B1, B2, B3, B4, MultiIndex4[A, B1, B2, B3, B4]] {
@@ -73,7 +75,7 @@ class MultiIndexMap4Builder[A, B1, B2, B3, B4, Coll <: MultiIndex4[A, B1, B2, B3
     this
   }
   def clear() { elems = empty }
-  def result: Coll = elems
+  def result(): Coll = elems
 }
 
 class MultiIndex4Impl[A, B1, B2, B3, B4] private[multiindex] (

@@ -22,10 +22,6 @@ class MultiIndexMapSpec extends FlatSpec with Matchers {
 
   val mim1 = users.indexBy(_.name)
 
-  println((mim1 ++ mim1) == mim1 ++ users)
-
-  println(mim1)
-
   val mim2: MultiIndex2[User, String, Char] = users.indexBy(_.name, _.sex)
 
   val mim3: MultiIndex3[User, String, Char, Int] = mim2.withIndex(_.name.length)
