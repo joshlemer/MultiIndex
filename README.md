@@ -12,7 +12,7 @@ In build.sbt:
 
 ```scala
 libraryDependencies ++= Seq(
-  "com.github.joshlemer" %% "multiindex" % "0.1.0"
+  "com.github.joshlemer" %% "multiindex" % "0.1.1"
 )
 ```
 
