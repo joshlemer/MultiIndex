@@ -1,7 +1,5 @@
 package com.github.joshlemer.multiset
 
-import scala.collection.generic.GenericCompanion
-
 object MultiSet extends {
   def apply[A](as: A*) = as.toMultiSet
 
