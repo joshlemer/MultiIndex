@@ -77,41 +77,60 @@ import multiindex.MultiIndex
 val indexed: MultiIndex1[Int, Double] = MultiIndex.empty[Int, Double](_.toDouble) ++ List(1,2,3)
 ```
 
-For example, maybe you have a `List[User]` and want to query by both name, and by id:
+Notice that there isn't just a single MultiIndex type, but rather a different type for each number of dimensions (number of indexing functions). So for example `MultiIndex1[A, B1]`, `MultiIndex2[A, B1, B2]`, `MultiIndex3[A, B1, B2, B3]`, `MultiIndex4[A, B1, B2, B3, B4]`. The type of MultiIndex you get when you create one is determined by the number of indexing functions you pass in to the indexBy method, or to the Factory constructor.
+
+### Lookups
+
+To look up elements by an index, you can use the `getX` methods, where X is the index you want to query by. So for example
 
 ```scala
-import com.github.joshlemer.multiindex._
+val multiIndex = List(1,1,1,2,3,4,5).indexBy(_.toString, _ + 1, _ > 3)
 
-case class User(name: String, id: Int)
+multiIndex.get1("4") // List(4)
+multiIndex.get1("hello") // List()
 
-val users: List[User] = List(User("Steve", 1), User("Josh", 2), User("Steve", 3), User("Mary", 4))
+multiIndex.get2(4) // List(3)
+multiIndex.get2(8) // List()
 
-val usersByIdAndName = users.indexBy(_.name, _.id)
-
-val usersNamedSteve: List[User] = usersByIdAndName.get1("Steve") // List(User("Steve", 1), User("Steve", 3))
-val usersWithId4 = usersByIdAndName.get2(4) // List(User("Mary", 4))
-
-val usersWithNameSteveAndId4 = usersByIdAndName.get("Steve", 4) // List()
-
+multiIndex.get3(true) // List(4,5)
+multiIndex.get3(false) // List(1,1,1,2,3)
 ```
 
-The library also supports addition and subtraction
+Also exposed are `getXMultiSet` methods, where `X` is the index to query on. These methods return a `MultiSet[A]` rather than a `List[A]`, which is just a more compact representation of data. It is a Set data structure that can store duplicates.
 
 ```scala
-val added = usersByIdAndName + User("new user", 555) 
-added.get1("new user") // List[User], contains the new user
-added.get2(555) // List[User], contains the new user
-
-val removed = added - User("removed", 556) // removes a single instance of this user
+multiindex.get3MultiSet(false) // MultiSet(1 -> 3, 2 -> 1, 3 -> 1) // maps elements to their multiplicity in the set
 ```
 
-The library also supports adding indexes, yielding a higher-dimensioned index
+`MultiSet`s have the nice property that their unions and intersections are very fast to compute, and this is what you can use to make queries on multiple indexes at once. For example:
 
 ```scala
-val usersByIdAndNameAndNameLength = usersByIdAndName.withIndex(_.name.length)
 
-usersByIdAndNameAndLength.get3(4) // List[Users], all uses with name of length 4
+// get elements matching on BOTH index 1 and index 3
+multiindex.get1MultiSet("1").intersect(multiindex.get3MultiSet(false)) // MultiSet(1 -> 3)
 
+// get elements matching on EITHER index 2 or index 3
+multiindex.get1MultiSet("2").union(multiindex.get3MultiSet(true)) // MultiSet(2 -> 1, 4 -> 1, 5 -> 1)
+```
+
+### Adding and removing
+
+Adding and removing elements is very straight forward
+
+```scala
+val added = multiIndex + 9 + 10 + 11 // adds 9, 10, 11 to the index
+added.get1("10") // List(10)
+
+// each addition or removal only adds or removes 1 instance the element from the MultiIndex
+val removed = multiIndex - 1 - 1 - 2
+
+// or equivalently
+val added = multiIndex ++ List(9, 10, 11)
+val removed = multiIndex -- List(1, 1, 2)
+
+// It's also very vast to add MultSets to a MultiIndex
+val ms: MultiSet[Int] = ???
+multiIndex ++ added
 ```
 
 
