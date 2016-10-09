@@ -35,7 +35,7 @@ For example, maybe you are writing forum software that deals with Comments:
 case class Comment(userId: UserId, threadId: Int, createdAt: DateTime, body: String)
 ```
 
-So you have a `List[User]`, but want to quickly be able to retrieve all the comments for a particular user. To support this you might create a `Map[UserId, List[Comment]]` by calling `comments.groupBy(_.userId)`. Now you have fast lookup of comments by userId. This works well enough for this simple case, but now what happens when you want to access your data in more than one way? Maybe you also want to quickly find comments in a given thread. So you can again use `comments.groupBy(_.threadId)` to have fast lookups. But now you have to manually keep track of multiple different mappings, and it's not so easy to insert or remove comments.
+So you have a `List[Comment]`, but want to quickly be able to retrieve all the comments for a particular user. To support this you might create a `Map[UserId, List[Comment]]` by calling `comments.groupBy(_.userId)`. Now you have fast lookup of comments by userId. This works well enough for this simple case, but now what happens when you want to access your data in more than one way? Maybe you also want to quickly find comments in a given thread. So you can again use `comments.groupBy(_.threadId)` to have fast lookups. But now you have to manually keep track of multiple different mappings, and it's not so easy to insert or remove comments.
 
 Instead, you can use `MultiIndex` to easily index your collection on multiple indexes. The example above would simply be:
 
@@ -47,7 +47,7 @@ val comments: List[Comment] = ???
 val commentsByUserAndThread = comments.indexBy(_.userId, _.threadId) // MultiIndex2[User, UserId, Int]
 
 def commentsByUser(userId: UserId): List[Comment] = comments.get1(userId)
-def commentsByThread(threadId: Int): List[Comment] = comments.get2(thread)
+def commentsByThread(threadId: Int): List[Comment] = comments.get2(threadId)
 
 def postComment(comment: Comment): MultiIndex2[User, UserId, Int] = commentsByUserAndThread + comment
 def deleteComment(comment: Comment): MultiIndex2[User, UserId, Int] = commentsByUserAndThread - comment
