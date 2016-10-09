@@ -4,8 +4,6 @@
 
 This is a library to facilitate querying by multiple indexes on a collection in Scala. 
 
-It is not currently released, but probably will be soon!
-
 # Installation
 
 ## SBT
@@ -13,21 +11,18 @@ It is not currently released, but probably will be soon!
 In build.sbt:
 
 ```scala
-resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
-
 libraryDependencies ++= Seq(
-  "com.github.joshlemer" %% "multiindex" % "0.0.3-SNAPSHOT"
+  "com.github.joshlemer" %% "multiindex" % "0.1.0"
 )
 ```
 
 ## Maven
 
-Be sure to enable the Sonatype OSS Snapshots to your list of repositories, and then add the dependency:
 ```xml
 <dependency>
     <groupId>com.github.joshlemer</groupId>
     <artifactId>multiindex_2.11</artifactId>
-    <version>0.0.3-SNAPSHOT</version>
+    <version>0.1.0</version>
 </dependency>
 ```
 
