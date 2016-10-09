@@ -101,7 +101,7 @@ Also exposed are `getXMultiSet` methods, where `X` is the index to query on. The
 
 ```scala
 // maps elements to their multiplicity in the set
-multiindex.get3MultiSet(false) // MultiSet(1 -> 3, 2 -> 1, 3 -> 1) 
+multiindex.get3MultiSet(false) // MultiSet(1, 1, 1, 2, 3) 
 ```
 
 `MultiSet`s have the nice property that their unions and intersections are very fast to compute, and this is what you can use to make queries on multiple indexes at once. For example:
@@ -110,11 +110,11 @@ multiindex.get3MultiSet(false) // MultiSet(1 -> 3, 2 -> 1, 3 -> 1)
 
 // get elements matching on BOTH index 1 and index 3
 multiindex.get1MultiSet("1").intersect(multiindex.get3MultiSet(false)) 
-// MultiSet(1 -> 3)
+// MultiSet(1, 1, 1)
 
 // get elements matching on EITHER index 2 or index 3
 multiindex.get1MultiSet("2").union(multiindex.get3MultiSet(true)) 
-// MultiSet(2 -> 1, 4 -> 1, 5 -> 1)
+// MultiSet(2, 2, 4, 5)
 ```
 
 ### Adding and removing
@@ -136,5 +136,7 @@ val removed = multiIndex -- List(1, 1, 2)
 val ms: MultiSet[Int] = ???
 multiIndex ++ added
 ```
+
+
 
 

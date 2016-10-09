@@ -6,6 +6,8 @@ import com.github.joshlemer.multiset.MultiSet
 trait MultiIndex[A] extends Iterable[A] {
   def multiSet: MultiSet[A]
 
+  override def count(p: A => Boolean): Int = multiSet.count(p)
+
   /** Returns true if `a` is in this MultiIndex, otherwise false */
   def contains(a: A): Boolean = multiSet.contains(a)
 

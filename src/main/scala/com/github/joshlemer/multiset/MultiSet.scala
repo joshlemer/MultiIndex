@@ -48,7 +48,11 @@ class MultiSet[A](inner: Map[A, Int]) extends Iterable[A] {
 
   def contains(a: A) = apply(a) > 0
 
+  override def count(p: A => Boolean): Int = inner.foldLeft(0) { case (acc, (a, multiplicity)) => if(p(a)) acc + multiplicity else acc }
+
   def toMap = inner
+
+  override def size: Int = inner.foldLeft(0) { case (counter, (a, multiplicity)) => counter + multiplicity}
 
   override def filter(p: A => Boolean) = new MultiSet(inner.filterKeys(p))
 

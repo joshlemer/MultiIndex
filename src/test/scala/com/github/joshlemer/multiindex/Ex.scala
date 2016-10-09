@@ -56,8 +56,17 @@ object Foo extends App {
     println("Elapsed time: " + (t1 - t0) + "ms")
     result
   }
+  import com.github.joshlemer.multiset._
 
-  println(time((((1 to 1000000) ++ (1 to 1000000)).indexBy(_ / 4, _ / 3) -- (1 to 100000) - 600000).get2(200000)))
+  val bigList = (1 to 100).flatMap(i => Vector.fill(10000)(i))
+  val bigMultiSet = bigList.toMultiSet
+
+  println(time(bigList.count(_ == 50)))
+  println(time(bigMultiSet.count(_ == 50)))
+  val a = time(bigMultiSet intersect bigMultiSet)
+  time(bigMultiSet intersect (1 to 4).toMultiSet)
+  time(bigMultiSet union bigMultiSet)
+
 }
 
 
