@@ -2,7 +2,7 @@ package com.github.joshlemer.multiset
 
 import scala.collection.generic.GenericCompanion
 
-object MultiSet extends GenericCompanion[MultiSet]{
+object MultiSet extends {
   def apply[A](as: A*) = as.toMultiSet
 
   def empty[A] = new MultiSet[A](Map.empty)

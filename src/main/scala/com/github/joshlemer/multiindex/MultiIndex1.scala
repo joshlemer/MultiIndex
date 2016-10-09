@@ -20,13 +20,13 @@ trait MultiIndex1Like[A, B1, +This <: MultiIndex1Like[A, B1, This] with MultiInd
   /** First function to index elements on */
   def f1: A => B1
 
-  /** Get a bag of all elements that match on both indexes with b1 and b2 */
+  /** Get a MultiSet of all elements that match on both indexes with b1 and b2 */
   def get(b1: B1): List[A] = get1(b1)
 
   /** Get a list of all elements that match b1 on index 1 */
   def get1(b1: B1): List[A]
 
-  /** Get a bag of all elements that match b1 on index 1 */
+  /** Get a MultiSet of all elements that match b1 on index 1 */
   def get1MultiSet(b1: B1): MultiSet[A]
 
   /** Append an element to these elements, add it to the indexes */

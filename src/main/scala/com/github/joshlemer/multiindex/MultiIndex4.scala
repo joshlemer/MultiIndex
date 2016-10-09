@@ -27,31 +27,32 @@ trait MultiIndex4Like[A, B1, B2, B3, B4, +This <: MultiIndex4Like[A, B1, B2, B3,
   /** Fourth function to index elements on */
   def f4: A => B4
 
-  /** Get a bag of all elements that match on both indexes with b1 and b2 and b3*/
-  def get(b1: B1, b2: B2, b3: B3): List[A]
+  /** Get a MultiSet of all elements that match on both indexes with b1 and b2 and b3*/
+  def get(b1: B1, b2: B2, b3: B3, b4: B4): List[A] =
+    get1MultiSet(b1).intersect(get2MultiSet(b2)).intersect(get3MultiSet(b3)).intersect(get4MultiSet(b4)).toList
 
   /** Get a list of all elements that match b1 on index 1 */
   def get1(b1: B1): List[A]
 
-  /** Get a bag of all elements that match b1 on index 1 */
+  /** Get a MultiSet of all elements that match b1 on index 1 */
   def get1MultiSet(b1: B1): MultiSet[A]
 
   /** Get a list of all elements that match b2 on index 2 */
   def get2(b2: B2): List[A]
 
-  /** Get a bag of all elements that match b2 on index 2 */
+  /** Get a MultiSet of all elements that match b2 on index 2 */
   def get2MultiSet(b2: B2): MultiSet[A]
 
   /** Get a list of all elements that match b3 on index 3 */
   def get3(b3: B3): List[A]
 
-  /** Get a bag of all elements that match b3 on index 3 */
+  /** Get a MultiSet of all elements that match b3 on index 3 */
   def get3MultiSet(b3: B3): MultiSet[A]
 
   /** Get a list of all elements that match b4 on index 4 */
   def get4(b4: B4): List[A]
 
-  /** Get a bag of all elements that match b4 on index 4 */
+  /** Get a MultiSet of all elements that match b4 on index 4 */
   def get4MultiSet(b4: B4): MultiSet[A]
 
   /** Append an element to these elements, add it to the indexes */
@@ -88,8 +89,6 @@ class MultiIndex4Impl[A, B1, B2, B3, B4] private[multiindex] (
   val index3: Index[A, B3],
   val f4: A => B4,
   val index4: Index[A, B4]) extends MultiIndex4[A, B1, B2, B3, B4] {
-
-  def get(b1: B1, b2: B2, b3: B3) = get1(b1).intersect(get2(b2)).intersect(get3(b3))
 
   def get1(b1: B1) = index1.getList(b1)
 
