@@ -68,7 +68,8 @@ val indexed: MultiIndex1[Int, String] = List(1,2,3).indexBy(_.toString)
 Second way - convert any `Iterable` to a MultiIndex using the `MultiIndex` companion object
 ```scala
 import multiindex.MultiIndex
-val indexed: MultiIndex1[Int, Int, Boolean, Boolean] = MultiIndex(List(1,2,3))(_ + 1 * 11 / 2, _ < 0, _ % 2 == 0)
+val indexed: MultiIndex1[Int, Int, Boolean, Boolean] = 
+  MultiIndex(List(1,2,3))(_ + 1 * 11 / 2, _ < 0, _ % 2 == 0)
 ```
 
 Third way - create an empty `MultiIndex` and add your collection to it
@@ -99,7 +100,8 @@ multiIndex.get3(false) // List(1,1,1,2,3)
 Also exposed are `getXMultiSet` methods, where `X` is the index to query on. These methods return a `MultiSet[A]` rather than a `List[A]`, which is just a more compact representation of data. It is a Set data structure that can store duplicates.
 
 ```scala
-multiindex.get3MultiSet(false) // MultiSet(1 -> 3, 2 -> 1, 3 -> 1) // maps elements to their multiplicity in the set
+// maps elements to their multiplicity in the set
+multiindex.get3MultiSet(false) // MultiSet(1 -> 3, 2 -> 1, 3 -> 1) 
 ```
 
 `MultiSet`s have the nice property that their unions and intersections are very fast to compute, and this is what you can use to make queries on multiple indexes at once. For example:
@@ -107,10 +109,12 @@ multiindex.get3MultiSet(false) // MultiSet(1 -> 3, 2 -> 1, 3 -> 1) // maps eleme
 ```scala
 
 // get elements matching on BOTH index 1 and index 3
-multiindex.get1MultiSet("1").intersect(multiindex.get3MultiSet(false)) // MultiSet(1 -> 3)
+multiindex.get1MultiSet("1").intersect(multiindex.get3MultiSet(false)) 
+// MultiSet(1 -> 3)
 
 // get elements matching on EITHER index 2 or index 3
-multiindex.get1MultiSet("2").union(multiindex.get3MultiSet(true)) // MultiSet(2 -> 1, 4 -> 1, 5 -> 1)
+multiindex.get1MultiSet("2").union(multiindex.get3MultiSet(true)) 
+// MultiSet(2 -> 1, 4 -> 1, 5 -> 1)
 ```
 
 ### Adding and removing
