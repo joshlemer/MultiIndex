@@ -39,7 +39,7 @@ class MultiSet[A](inner: Map[A, Int]) extends Iterable[A] {
 
   def union(that: MultiSet[A]): MultiSet[A] = {
     val (small, big) = smallBig(this, that)
-    small._inner.foldLeft(big) { case (ms, (a, int)) => ms + (a, int) }
+    small._inner.foldLeft(MultiSet.empty[A]) { case (ms, (a, int)) => ms + (a, small(a).max(big(a))) }
   }
 
   def iterator: Iterator[A] = inner.flatMap{ case(k, v) => Vector.fill(v)(k) }.toIterator

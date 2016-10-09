@@ -58,14 +58,16 @@ object Foo extends App {
   }
   import com.github.joshlemer.multiset._
 
-  val bigList = (1 to 100).flatMap(i => Vector.fill(10000)(i))
-  val bigMultiSet = bigList.toMultiSet
+  val bigList = time((1 to 100000).flatMap(i => Vector.fill(1)(i)))
+  val bigMultiSet = time(bigList.toMultiSet)
 
   println(time(bigList.count(_ == 50)))
   println(time(bigMultiSet.count(_ == 50)))
   val a = time(bigMultiSet intersect bigMultiSet)
   time(bigMultiSet intersect (1 to 4).toMultiSet)
   time(bigMultiSet union bigMultiSet)
+
+  println(MultiSet(1, 1, 1, 2, 3, 4, 4) union MultiSet(1, 1, 2, 2, 3, 3, 3, 3, 3))
 
 }
 
