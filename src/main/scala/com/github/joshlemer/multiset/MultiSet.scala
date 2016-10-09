@@ -10,7 +10,7 @@ private[multiset] object utils {
   def smallBig[A](left: MultiSet[A], right: MultiSet[A]) = if(left.size < right.size) (left, right) else (right, left)
 }
 
-class MultiSet[A](inner: Map[A, Int]) extends Iterable[A] {
+class MultiSet[A] private[multiset] (inner: Map[A, Int]) extends Iterable[A] {
   import utils._
   private lazy val _inner = inner.withDefaultValue(0)
 

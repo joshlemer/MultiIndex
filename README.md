@@ -117,7 +117,7 @@ multiindex.get1MultiSet("2").union(multiindex.get3MultiSet(true))
 // MultiSet(2, 2, 4, 5)
 ```
 
-### Adding and removing
+### Adding and removing elements
 
 Adding and removing elements is very straight forward
 
@@ -135,6 +135,68 @@ val removed = multiIndex -- List(1, 1, 2)
 // It's also very vast to add MultSets to a MultiIndex
 val ms: MultiSet[Int] = ???
 multiIndex ++ added
+```
+
+## MultiSets
+
+A [MultiSet](https://en.wikipedia.org/wiki/Multiset) is a data structure similar to a `Set`, except that it can contain duplicate elements. This library contains a simple purely-functional implementation of a this data structure, which is used by `MultiIndex`es. 
+They are used in this libarary because they support effectively constant-time lookups, insertions and removals, and can be represented in a very compact form, basically as a `Map[A, Int]` from elements to their multiplicity in the MultiSet, at O(n), where n is the number of unique elements in the `MultiSet`.
+Because many users would prefer to use standard library collections when dealing with `MultiIndex`es, the api exposes `getX` methods which return `List`s, however using the `getXMultiSet` methods will be more performant, since they are already stored, unlike `List`s which need to be created from the `MultiSet.toList` method.
+
+### Creating a MultiSet
+
+```scala
+import com.joshlemer.multiset._
+
+// Factory apply method
+val multiSet: MultiSet[Char] = MultiSet('a', 'b', 'b', 'c', 'c', 'c')
+
+// Implicit class imported in com.joshlemer.multiSet
+val multiSet: MultiSet[Char] = List('a', 'b', 'b', 'c', 'c', 'c').toMultiSet
+```
+
+### Lookups
+
+```scala
+multiSet('a') // 1 -- 'a' is in the MultiSet once
+multiSet('b') // 2
+multiSet('c') // 3
+multiSet('d') // 0 -- 'd' does not appear in the MultiSet
+
+multiSet.contains('a') // true
+multiSet.contains('d') // false
+```
+
+### Insertions and Removals
+
+```scala
+multiSet + 'a' + 'b' + 'e' // returns a MultiSet with each Char added
+multiSet - 'a' - 'b' - 'e' // returns a MultiSet with each Char removed
+
+// equivalently
+multiSet ++ List('a', 'b', 'c')
+multiSet -- List('a', 'b', 'c')
+
+// and again
+multiSet ++ MultiSet('a', 'b', 'c')
+multiSet -- MultiSet('a', 'b', 'c')
+```
+
+### MultiSet Union and Intersection
+
+It is very easy and fast to compute the intersection or union of two MultiSets
+
+
+```scala
+MultiSet(1,1,1,1,2,2).intersect(MultiSet(1,2,2,2,2,3)) // MultiSet(1, 2, 2)
+
+MultiSet(1,1,1,1,2,2).intersect(MultiSet(1,2,2,2,2,3)) // MultiSet(1,1,1,1,2,2,2,2,3)
+```
+
+Note that taking a union does not simply add the two `MultiSet`s together, but takes the max multiplicity of each element from the two `MultiSet`s. For example:
+
+```scala
+MultiSet(1) union MultiSet(1,1) // MultiSet(1,1), NOT MultiSet(1,1,1)
 ```
 
 
