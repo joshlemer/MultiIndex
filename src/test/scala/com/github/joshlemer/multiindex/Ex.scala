@@ -57,6 +57,8 @@ object Foo extends App {
     result
   }
 
+  (1 to 100).indexBy(_ / 3).foldLeft(4)()
+
   println(time((((1 to 1000000) ++ (1 to 1000000)).indexBy(_ / 4, _ / 3) -- (1 to 100000) - 600000).get2(200000)))
 }
 

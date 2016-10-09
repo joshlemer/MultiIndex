@@ -1,6 +1,8 @@
 package com.github.joshlemer.multiset
 
-object MultiSet {
+import scala.collection.generic.GenericCompanion
+
+object MultiSet extends GenericCompanion[MultiSet]{
   def apply[A](as: A*) = as.toMultiSet
 
   def empty[A] = new MultiSet[A](Map.empty)
@@ -45,6 +47,8 @@ class MultiSet[A](inner: Map[A, Int]) extends Iterable[A] {
   def iterator: Iterator[A] = inner.flatMap{ case(k, v) => Vector.fill(v)(k) }.toIterator
 
   def distinct: Set[A] = inner.keySet
+
+  def contains(a: A) = apply(a) > 0
 
   def toMap = inner
 
