@@ -22,7 +22,7 @@ libraryDependencies ++= Seq(
 <dependency>
     <groupId>com.github.joshlemer</groupId>
     <artifactId>multiindex_2.11</artifactId>
-    <version>0.1.0</version>
+    <version>0.1.1</version>
 </dependency>
 ```
 
@@ -190,7 +190,7 @@ It is very easy and fast to compute the intersection or union of two MultiSets
 ```scala
 MultiSet(1,1,1,1,2,2).intersect(MultiSet(1,2,2,2,2,3)) // MultiSet(1, 2, 2)
 
-MultiSet(1,1,1,1,2,2).intersect(MultiSet(1,2,2,2,2,3)) // MultiSet(1,1,1,1,2,2,2,2,3)
+MultiSet(1,1,1,1,2,2).union(MultiSet(1,2,2,2,2,3)) // MultiSet(1,1,1,1,2,2,2,2,3)
 ```
 
 Note that taking a union does not simply add the two `MultiSet`s together, but takes the max multiplicity of each element from the two `MultiSet`s. For example:
