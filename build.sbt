@@ -23,7 +23,7 @@ publishTo <<= version { v: String =>
 
 publishArtifact in Test := false
 
-pomExtra :=
+pomExtra := (
   <url>http://github.com/joshlemer/MultiIndex</url>
     <licenses>
       <license>
@@ -42,4 +42,8 @@ pomExtra :=
         <name>Josh Lemer</name>
         <url>http://github.com/joshlemer</url>
       </developer>
-    </developers>
+    </developers>)
+
+
+scaladexKeywords in Scaladex := Seq("Indexes", "Indexing", "Data Structure")
+credentials in Scaladex := Seq(Credentials(Path.userHome / ".ivy2" / ".scaladex.credentials"))
