@@ -1,12 +1,18 @@
 package com.github.joshlemer.multiindex
 
+import com.github.joshlemer.multiset.MultiSet
+
 object Index{
-  def apply[A, B](f: A => B, es: Iterable[A] = Iterable.empty[A]) = empty[A, B](f) ++ es
+  def apply[A, B](as: A*)(f: A => B): Index[A, B] = empty[A, B](f) ++ as
+
+  def fromIterable[A, B](as: Iterable[A])(f: A => B): Index[A, B] = empty[A, B](f) ++ as
+
+  def fromMultiSet[A, B](as: MultiSet[A])(f: A => B): Index[A, B] = empty[A, B](f) ++ as
 
   def empty[A, B](f: A => B) = new Index[A, B](Map.empty, f)
 }
 
-class Index[A, B](elems: Map[B, MultiSet[A]], val f: A => B) {
+class Index[A, B] private[multiindex] (elems: Map[B, MultiSet[A]], val f: A => B) {
 
   val _elems = elems.withDefaultValue(MultiSet.empty[A])
 

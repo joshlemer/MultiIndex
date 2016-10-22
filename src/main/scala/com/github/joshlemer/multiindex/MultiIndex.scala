@@ -1,8 +1,15 @@
 package com.github.joshlemer.multiindex
 
+import com.github.joshlemer.multiset.MultiSet
+
 /** Base trait of all MultiIndexMaps of any dimension */
 trait MultiIndex[A] extends Iterable[A] {
   def multiSet: MultiSet[A]
+
+  override def count(p: A => Boolean): Int = multiSet.count(p)
+
+  /** Returns true if `a` is in this MultiIndex, otherwise false */
+  def contains(a: A): Boolean = multiSet.contains(a)
 
   override def iterator: Iterator[A] = multiSet.toList.toIterator
 }
