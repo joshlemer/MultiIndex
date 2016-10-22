@@ -67,8 +67,9 @@ class MultiIndex1Spec extends FlatSpec with Matchers with MultiIndex1Behaviors {
     val a = multiIndex1ToInt.take(multiIndex1ToInt.size + 100)
     val b = multiIndex1ToInt
 
-    info((a == b).toString)
-    info((a equals b).toString)
+    info("a == b: " + (a == b).toString)
+    info("a.toString == b.toString: " + (a.toString == b.toString).toString)
+    info("a equals b: " + (a equals b).toString)
 
     a should equal (b)
     a should be (b)
